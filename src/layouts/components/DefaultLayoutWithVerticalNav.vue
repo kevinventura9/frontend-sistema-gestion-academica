@@ -1,6 +1,6 @@
 <script setup>
 import NavItems from '@/layouts/components/NavItems.vue'
-import logo from '@images/logo.svg?raw'
+import logo from '@images/logo_largo.png'
 import VerticalNavLayout from '@layouts/components/VerticalNavLayout.vue'
 
 // Components
@@ -63,16 +63,11 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
         to="/"
         class="app-logo app-title-wrapper"
       >
-        <!-- eslint-disable vue/no-v-html -->
-        <div
+        <img
+          :src="logo"
+          alt="Logo"
           class="d-flex"
-          v-html="logo"
         />
-        <!-- eslint-enable -->
-
-        <h1 class="font-weight-medium leading-normal text-xl text-uppercase">
-          Materio
-        </h1>
       </RouterLink>
 
       <IconBtn
@@ -112,11 +107,10 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
   align-items: center;
   column-gap: 0.75rem;
 
-  .app-logo-title {
-    font-size: 1.25rem;
-    font-weight: 500;
-    line-height: 1.75rem;
-    text-transform: uppercase;
+  img {
+    block-size: 3rem;
+    inline-size: auto;
+    object-fit: contain;
   }
 }
 </style>
