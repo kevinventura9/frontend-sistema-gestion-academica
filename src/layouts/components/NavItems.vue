@@ -1,11 +1,40 @@
 <script setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
-import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue';
+import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue';
+import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
 </script>
 
 <template>
+  <!-- 👉 Inicio -->
+  <VerticalNavLink
+    :item="{
+      title: 'Inicio',
+      icon: 'ri-home-4-line',
+      to: '/',
+    }"
+  />
+
+  <!-- 👉 Seguridad -->
+  <VerticalNavSectionTitle
+    :item="{
+      heading: 'Seguridad',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+      title: 'Usuarios y roles',
+      icon: 'ri-user-settings-line',
+      to: '/usuarios',
+    }"
+  />
+
+
   <!-- 👉 Dashboards -->
+   <VerticalNavSectionTitle
+    :item="{
+      heading: 'Plantilla',
+    }"
+  />
   <VerticalNavGroup
     :item="{
       title: 'Dashboards',

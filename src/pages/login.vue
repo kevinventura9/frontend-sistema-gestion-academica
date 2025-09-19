@@ -1,7 +1,6 @@
 <script setup>
 import { useTheme } from 'vuetify'
-import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
-import logo from '@images/logo.svg?raw'
+import logoLargo from '/logo_largo.png'
 import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
@@ -10,7 +9,6 @@ import authV1Tree from '@images/pages/auth-v1-tree.png'
 const form = ref({
   email: '',
   password: '',
-  remember: false,
 })
 
 const vuetifyTheme = useTheme()
@@ -30,28 +28,20 @@ const isPasswordVisible = ref(false)
       class="auth-card pa-4 pt-7"
       max-width="448"
     >
-      <VCardItem class="justify-center">
-        <RouterLink
-          to="/"
-          class="d-flex align-center gap-3"
-        >
-          <!-- eslint-disable vue/no-v-html -->
-          <div
-            class="d-flex"
-            v-html="logo"
+      <VCardItem class="justify-center" >
+        <img
+            :src="logoLargo"
+            alt="Colegio Bautista Misión de Fe"
+            height="100rem"
           />
-          <h2 class="font-weight-medium text-2xl text-uppercase">
-            Materio
-          </h2>
-        </RouterLink>
       </VCardItem>
 
       <VCardText class="pt-2">
         <h4 class="text-h4 mb-1">
-          Welcome to Materio! 👋🏻
+          ¡Bienvenido al Sistema de Gestión Académica!
         </h4>
         <p class="mb-0">
-          Please sign-in to your account and start the adventure
+          Por favor, inicia sesión para acceder al sistema.
         </p>
       </VCardText>
 
@@ -62,7 +52,7 @@ const isPasswordVisible = ref(false)
             <VCol cols="12">
               <VTextField
                 v-model="form.email"
-                label="Email"
+                label="Correo Electrónico"
                 type="email"
               />
             </VCol>
@@ -71,7 +61,7 @@ const isPasswordVisible = ref(false)
             <VCol cols="12">
               <VTextField
                 v-model="form.password"
-                label="Password"
+                label="Contraseña"
                 placeholder="············"
                 :type="isPasswordVisible ? 'text' : 'password'"
                 autocomplete="password"
@@ -79,60 +69,25 @@ const isPasswordVisible = ref(false)
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
               />
 
-              <!-- remember me checkbox -->
-              <div class="d-flex align-center justify-space-between flex-wrap my-6">
-                <VCheckbox
-                  v-model="form.remember"
-                  label="Remember me"
-                />
-
-                <a
+                <!-- Olvidaste tu contraseña link -->
+                <div class="d-flex align-end justify-end flex-wrap my-6">
+                  <a
                   class="text-primary"
                   href="javascript:void(0)"
-                >
-                  Forgot Password?
-                </a>
-              </div>
+                  >
+                  ¿Olvidaste tu contraseña?
+                  </a>
+                </div>
 
               <!-- login button -->
               <VBtn
                 block
                 type="submit"
                 to="/"
+                class="mt-6"
               >
-                Login
+                Iniciar Sesión
               </VBtn>
-            </VCol>
-
-            <!-- create account -->
-            <VCol
-              cols="12"
-              class="text-center text-base"
-            >
-              <span>New on our platform?</span>
-              <RouterLink
-                class="text-primary ms-2"
-                to="/register"
-              >
-                Create an account
-              </RouterLink>
-            </VCol>
-
-            <VCol
-              cols="12"
-              class="d-flex align-center"
-            >
-              <VDivider />
-              <span class="mx-4">or</span>
-              <VDivider />
-            </VCol>
-
-            <!-- auth providers -->
-            <VCol
-              cols="12"
-              class="text-center"
-            >
-              <AuthProvider />
             </VCol>
           </VRow>
         </VForm>
@@ -162,3 +117,4 @@ const isPasswordVisible = ref(false)
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth";
 </style>
+
