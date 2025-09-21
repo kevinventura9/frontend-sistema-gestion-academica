@@ -83,7 +83,9 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
     </template>
 
     <!-- 👉 Pages -->
-    <slot />
+    <transition name="page" mode="out-in">
+      <slot />
+    </transition>
 
     <!-- 👉 Footer -->
     <template #footer>
@@ -113,4 +115,15 @@ import UserProfile from '@/layouts/components/UserProfile.vue'
     object-fit: contain;
   }
 }
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.page-enter-from,
+.page-leave-to {
+  opacity: 0;
+}
+
 </style>

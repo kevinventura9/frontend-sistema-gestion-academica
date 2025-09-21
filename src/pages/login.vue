@@ -1,10 +1,15 @@
 <script setup>
-import { useTheme } from 'vuetify'
-import logoLargo from '/logo_largo.png'
+import { useAuthStore } from '@/stores/auth'
 import authV1MaskDark from '@images/pages/auth-v1-mask-dark.png'
 import authV1MaskLight from '@images/pages/auth-v1-mask-light.png'
 import authV1Tree2 from '@images/pages/auth-v1-tree-2.png'
 import authV1Tree from '@images/pages/auth-v1-tree.png'
+import { useRouter } from 'vue-router'
+import { useTheme } from 'vuetify'
+import logoLargo from '/logo_largo.png'
+
+const router = useRouter()
+const authStore = useAuthStore()
 
 const form = ref({
   email: '',
@@ -18,6 +23,72 @@ const authThemeMask = computed(() => {
 })
 
 const isPasswordVisible = ref(false)
+const isLoading = ref(false)
+const errors = ref({
+  email: '',
+  password: '',
+  general: ''
+})
+
+// Validación de campos vacíos (frontend)
+const validateForm = () => {
+  const newErrors = { email: '', password: '', general: '' }
+  let isValid = true
+
+  if (!form.value.email.trim()) {
+    newErrors.email = 'El correo electrónico es obligatorio'
+    isValid = false
+  }
+
+  if (!form.value.password.trim()) {
+    newErrors.password = 'La contraseña es obligatoria'
+    isValid = false
+  }
+
+  errors.value = newErrors
+  return isValid
+}
+
+// Limpiar errores cuando el usuario empiece a escribir
+const clearError = (field) => {
+  if (errors.value[field]) {
+    errors.value[field] = ''
+  }
+}
+
+const handleLogin = async () => {
+  // Validación frontend primero
+  if (!validateForm()) {
+    return
+  }
+
+  isLoading.value = true
+  errors.value = { email: '', password: '', general: '' }
+
+  try {
+    await authStore.login(form.value.email, form.value.password)
+    router.push('/dashboard')
+  } catch (error) {
+    if (error.type === 'validation' && error.errors) {
+      // Mapear errores específicos de Laravel a los campos
+      if (error.errors.email && error.errors.email[0]) {
+        errors.value.email = error.errors.email[0]
+      }
+      if (error.errors.password && error.errors.password[0]) {
+        errors.value.password = error.errors.password[0]
+      }
+      // Si hay otros errores no mapeados, mostrar como error general
+      if (!errors.value.email && !errors.value.password && error.message) {
+        errors.value.general = error.message
+      }
+    } else {
+      // Error general (red, servidor, etc.)
+      errors.value.general = error.message || 'Error al iniciar sesión'
+    }
+  } finally {
+    isLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -46,14 +117,18 @@ const isPasswordVisible = ref(false)
       </VCardText>
 
       <VCardText>
-        <VForm @submit.prevent="() => {}">
+        <VForm @submit.prevent="handleLogin">
           <VRow>
             <!-- email -->
             <VCol cols="12">
               <VTextField
                 v-model="form.email"
-                label="Correo Electrónico"
+                label="Correo electrónico"
                 type="email"
+                :disabled="isLoading"
+                :error="!!errors.email"
+                :error-messages="errors.email"
+                @input="clearError('email')"
               />
             </VCol>
 
@@ -67,6 +142,10 @@ const isPasswordVisible = ref(false)
                 autocomplete="password"
                 :append-inner-icon="isPasswordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
                 @click:append-inner="isPasswordVisible = !isPasswordVisible"
+                :disabled="isLoading"
+                :error="!!errors.password"
+                :error-messages="errors.password"
+                @input="clearError('password')"
               />
 
                 <!-- Olvidaste tu contraseña link -->
@@ -79,12 +158,20 @@ const isPasswordVisible = ref(false)
                   </a>
                 </div>
 
+                <!-- Error general -->
+                <div v-if="errors.general" class="mb-4">
+                  <VAlert type="error" dismissible>
+                    {{ errors.general }}
+                  </VAlert>
+                </div>
+
               <!-- login button -->
               <VBtn
                 block
                 type="submit"
-                to="/"
                 class="mt-6"
+                :loading="isLoading"
+                :disabled="isLoading"
               >
                 Iniciar Sesión
               </VBtn>
@@ -116,5 +203,41 @@ const isPasswordVisible = ref(false)
 
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth";
+
+// Estilos similares a Google para errores
+.v-text-field {
+  .v-field--error .v-field__outline {
+    --v-field-border-color: #d93025;
+  }
+
+  .v-messages__message {
+    animation: error-appear 0.3s ease-out;
+    color: #d93025 !important;
+    font-size: 0.75rem;
+    font-weight: 400;
+  }
+}
+
+// Animación suave para la aparición de errores
+@keyframes error-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Espaciado mejorado para el formulario
+.auth-card {
+  .v-form {
+    .v-col {
+      padding-block-end: 8px;
+    }
+  }
+}
 </style>
 
