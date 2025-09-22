@@ -24,7 +24,7 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
     :item="{
       title: 'Usuarios y roles',
       icon: 'ri-user-settings-line',
-      to: '/usuarios',
+      to: '/modulo1/usuarios-roles',
     }"
   />
 

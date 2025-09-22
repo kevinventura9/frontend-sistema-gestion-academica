@@ -38,6 +38,11 @@ export const routes = [
         component: () => import('@/pages/form-layouts.vue'),
         meta: { requiresAuth: true }
       },
+      {
+        path: 'modulo1/usuarios-roles',
+        component: () => import('@/pages/modulo1/usuarios-roles-page.vue'),
+        meta: { requiresAuth: true }
+      },
     ],
   },
   {
