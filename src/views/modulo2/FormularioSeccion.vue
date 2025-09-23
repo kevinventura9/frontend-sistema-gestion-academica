@@ -66,7 +66,8 @@
             />
           </v-col>
         </v-row>
-        <v-btn color="primary" @click="submitForm">Guardar</v-btn>
+  <v-btn color="primary" @click="submitForm">{{ modoClonar ? 'Clonar' : 'Guardar' }}</v-btn>
+  <v-btn color="secondary" @click="$emit('cancelar')" v-if="modoClonar">Cancelar</v-btn>
       </v-form>
     </v-card-text>
   </v-card>
@@ -79,6 +80,14 @@ export default {
   name: 'FormularioSeccion',
   props: {
     seccionEdit: {
+      type: Object,
+      default: null
+    },
+    modoClonar: {
+      type: Boolean,
+      default: false
+    },
+    seccion: {
       type: Object,
       default: null
     }
@@ -140,36 +149,40 @@ export default {
     },
     async submitForm() {
       if (this.$refs.form.validate()) {
-        this.cargando = true
-        try {
-          if (this.editId) {
-            await editarSeccion(this.editId, this.seccion)
-            alert('Sección editada exitosamente.')
-            this.$emit('reset-edit')
-          } else {
-            await crearSeccion(this.seccion)
-            alert('Sección guardada exitosamente.')
+        if (this.modoClonar) {
+          this.$emit('submit', this.seccion)
+        } else {
+          this.cargando = true
+          try {
+            if (this.editId) {
+              await editarSeccion(this.editId, this.seccion)
+              alert('Sección editada exitosamente.')
+              this.$emit('reset-edit')
+            } else {
+              await crearSeccion(this.seccion)
+              alert('Sección guardada exitosamente.')
+            }
+            this.$emit('guardar-seccion', this.seccion)
+            // Limpiar el formulario
+            this.seccion = {
+              jornada: '',
+              codigo: '',
+              estado: '',
+              grado: '',
+              capacidad_maxima: '',
+              plan_estudio_id: '',
+              anio_lectivo: ''
+            }
+            this.editId = null
+            if (this.$refs.form && this.$refs.form.reset) {
+              this.$refs.form.reset();
+            }
+            this.resetValidation()
+          } catch (error) {
+            alert('Error al guardar la sección.')
+          } finally {
+            this.cargando = false
           }
-          this.$emit('guardar-seccion', this.seccion)
-          // Limpiar el formulario
-          this.seccion = {
-            jornada: '',
-            codigo: '',
-            estado: '',
-            grado: '',
-            capacidad_maxima: '',
-            plan_estudio_id: '',
-            anio_lectivo: ''
-          }
-          this.editId = null
-          if (this.$refs.form && this.$refs.form.reset) {
-            this.$refs.form.reset();
-          }
-          this.resetValidation()
-        } catch (error) {
-          alert('Error al guardar la sección.')
-        } finally {
-          this.cargando = false
         }
       }
     }

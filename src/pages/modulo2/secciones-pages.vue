@@ -9,11 +9,22 @@
     <ListaSecciones
       ref="listaSecciones"
       @editar-seccion="onEditarSeccion"
+      @clonar-seccion="onClonarSeccion"
     />
+    <v-dialog v-model="modalClonar" max-width="600px">
+      <FormularioSeccion
+        v-if="seccionAClonar"
+        :seccionEdit="seccionAClonar"
+        :modoClonar="true"
+        @submit="clonarSeccion"
+        @cancelar="modalClonar = false"
+      />
+    </v-dialog>
   </v-container>
 </template>
 
 <script>
+import axios from 'axios';
 import FormularioSeccion from '../../views/modulo2/FormularioSeccion.vue';
 import ListaSecciones from '../../views/modulo2/ListaSecciones.vue';
 
@@ -25,7 +36,9 @@ export default {
   },
   data() {
     return {
-      seccionEdit: null
+      seccionEdit: null,
+      modalClonar: false,
+      seccionAClonar: null
     }
   },
   methods: {
@@ -42,6 +55,25 @@ export default {
     },
     onEditarSeccion(seccion) {
       this.seccionEdit = { ...seccion }
+    },
+    onClonarSeccion(seccion) {
+      this.seccionAClonar = { ...seccion }
+      this.modalClonar = true
+    },
+    async clonarSeccion(datos) {
+      try {
+        await axios.post('http://localhost:8000/api/secciones/clonar', datos)
+        this.modalClonar = false
+        this.seccionAClonar = null
+        if (this.$refs.listaSecciones) {
+          this.$refs.listaSecciones.cargarSecciones && this.$refs.listaSecciones.cargarSecciones();
+        }
+        this.$nextTick(() => {
+          alert('Sección clonada exitosamente.')
+        })
+      } catch (error) {
+        alert('Error al clonar la sección.')
+      }
     }
   }
 }
