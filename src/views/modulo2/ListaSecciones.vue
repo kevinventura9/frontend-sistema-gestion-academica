@@ -9,8 +9,9 @@
         class="elevation-1"
       >
         <template v-slot:item.acciones="{ item }">
-          <v-btn color="primary" @click="$emit('editar-seccion', item)">Editar</v-btn>
-          <v-btn color="error" @click="eliminar(item.id)">Eliminar</v-btn>
+         <v-btn color="primary" @click="$emit('editar-seccion', item)">Editar</v-btn>
+         <v-btn color="error" @click="eliminar(item.id)">Eliminar</v-btn>
+         <v-btn color="secondary" @click="abrirClonar(item)">Clonar</v-btn>
         </template>
       </v-data-table>
     </v-card-text>
@@ -56,6 +57,9 @@ export default {
       } catch (error) {
         alert('Error al eliminar la sección.')
       }
+    },
+    abrirClonar(item) {
+      this.$emit('clonar-seccion', item)
     }
   }
 }
