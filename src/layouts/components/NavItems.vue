@@ -1,7 +1,7 @@
 <script setup>
-import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue'
-import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue'
-import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
+import VerticalNavSectionTitle from '@/@layouts/components/VerticalNavSectionTitle.vue';
+import VerticalNavGroup from '@layouts/components/VerticalNavGroup.vue';
+import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
 </script>
 
 <template>
@@ -280,6 +280,13 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue'
       href: 'https://github.com/themeselection/materio-vuetify-vuejs-admin-template-free/issues',
       icon: 'ri-lifebuoy-line',
       target: '_blank',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+      title: 'Gestión de Secciones',
+      icon: 'ri-list-check',
+      to: '/modulo2/secciones-pages',
     }"
   />
 </template>

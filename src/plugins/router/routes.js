@@ -32,6 +32,10 @@ export const routes = [
         path: 'form-layouts',
         component: () => import('@/pages/form-layouts.vue'),
       },
+      {
+        path: 'modulo2/secciones-pages',
+        component: () => import('@/pages/modulo2/secciones-pages.vue'),
+      },
     ],
   },
   {
