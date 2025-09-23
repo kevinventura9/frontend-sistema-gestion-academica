@@ -329,4 +329,11 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       target: '_blank',
     }"
   />
+  <VerticalNavLink
+    :item="{
+      title: 'Gestión de Secciones',
+      icon: 'ri-list-check',
+      to: '/modulo2/secciones-pages',
+    }"
+  />
 </template>

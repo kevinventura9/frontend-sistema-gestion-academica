@@ -66,6 +66,10 @@ export const routes = [
         meta: { requiresAuth: true },
         props: true
       },
+      {
+        path: 'modulo2/secciones-pages',
+        component: () => import('@/pages/modulo2/secciones-pages.vue'),
+      },
     ],
   },
   {
