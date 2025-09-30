@@ -173,7 +173,7 @@ const handleLogin = async () => {
                 :loading="isLoading"
                 :disabled="isLoading"
               >
-                Iniciar Sesión
+                Iniciar sesión
               </VBtn>
             </VCol>
           </VRow>
@@ -203,41 +203,5 @@ const handleLogin = async () => {
 
 <style lang="scss">
 @use "@core/scss/template/pages/page-auth";
-
-// Estilos similares a Google para errores
-.v-text-field {
-  .v-field--error .v-field__outline {
-    --v-field-border-color: #d93025;
-  }
-
-  .v-messages__message {
-    animation: error-appear 0.3s ease-out;
-    color: #d93025 !important;
-    font-size: 0.75rem;
-    font-weight: 400;
-  }
-}
-
-// Animación suave para la aparición de errores
-@keyframes error-appear {
-  from {
-    opacity: 0;
-    transform: translateY(-4px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-// Espaciado mejorado para el formulario
-.auth-card {
-  .v-form {
-    .v-col {
-      padding-block-end: 8px;
-    }
-  }
-}
 </style>
 

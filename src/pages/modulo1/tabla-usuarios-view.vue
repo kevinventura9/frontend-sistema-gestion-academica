@@ -1,246 +1,263 @@
 <script setup>
-import avatar1 from '@images/avatars/avatar-1.png'
-import avatar2 from '@images/avatars/avatar-2.png'
-import avatar3 from '@images/avatars/avatar-3.png'
-import avatar4 from '@images/avatars/avatar-4.png'
-import avatar5 from '@images/avatars/avatar-5.png'
-import avatar6 from '@images/avatars/avatar-6.png'
-import avatar7 from '@images/avatars/avatar-7.png'
-import avatar8 from '@images/avatars/avatar-8.png'
+import { getUsuarios } from '@/api/usuarios.js'
+import TablaReutilizable from '@/components/TablaReutilizable.vue'
+import { computed, onMounted, ref } from 'vue'
+
+
+// Reactive data
+const search = ref('')
+const selectedUsers = ref([])
+const usuarios = ref([])
+const loading = ref(false)
+const error = ref(null)
 
 const headers = [
   {
-    title: 'User',
-    key: 'username',
+    title: 'Usuario',
+    key: 'nombre_completo',
+    sortable: true,
   },
   {
-    title: 'Email',
-    key: 'email',
+    title: 'Rol',
+    key: 'rol',
+    sortable: true,
   },
   {
-    title: 'Role',
-    key: 'role',
+    title: 'Teléfono',
+    key: 'telefono',
+    sortable: true,
   },
   {
-    title: 'Status',
-    key: 'status',
+    title: 'Estado',
+    key: 'estado',
+    sortable: true,
+  },
+  {
+    title: 'Acciones',
+    key: 'actions',
+    sortable: false,
   },
 ]
 
-const userData = [
-  {
-    id: 1,
-    fullName: 'Galasasen Slixby',
-    company: 'Yotz PVT LTD',
-    role: 'editor',
-    username: 'gslixby0',
-    country: 'El Salvador',
-    contact: '(479) 232-9151',
-    email: 'gslixby0@abc.net.au',
-    currentPlan: 'enterprise',
-    status: 'inactive',
-    avatar: avatar1,
-  },
-  {
-    id: 2,
-    fullName: 'Halsey Redmore',
-    company: 'Skinder PVT LTD',
-    role: 'author',
-    username: 'hredmore1',
-    country: 'Albania',
-    contact: '(472) 607-9137',
-    email: 'hredmore1@imgur.com',
-    currentPlan: 'team',
-    status: 'pending',
-    avatar: avatar2,
-  },
-  {
-    id: 3,
-    fullName: 'Marjory Sicely',
-    company: 'Oozz PVT LTD',
-    role: 'maintainer',
-    username: 'msicely2',
-    country: 'Russia',
-    contact: '(321) 264-4599',
-    email: 'msicely2@who.int',
-    currentPlan: 'enterprise',
-    status: 'active',
-    avatar: avatar3,
-  },
-  {
-    id: 4,
-    fullName: 'Cyrill Risby',
-    company: 'Oozz PVT LTD',
-    role: 'Admin',
-    username: 'crisby3',
-    country: 'China',
-    contact: '(923) 690-6806',
-    email: 'crisby3@wordpress.com',
-    currentPlan: 'team',
-    status: 'inactive',
-    avatar: avatar4,
-  },
-  {
-    id: 5,
-    fullName: 'Maggy Hurran',
-    company: 'Aimbo PVT LTD',
-    role: 'subscriber',
-    username: 'mhurran4',
-    country: 'Pakistan',
-    contact: '(669) 914-1078',
-    email: 'mhurran4@yahoo.co.jp',
-    currentPlan: 'enterprise',
-    status: 'pending',
-    avatar: avatar5,
-  },
-  {
-    id: 6,
-    fullName: 'Silvain Halstead',
-    company: 'Jaxbean PVT LTD',
-    role: 'author',
-    username: 'shalstead5',
-    country: 'China',
-    contact: '(958) 973-3093',
-    email: 'shalstead5@shinystat.com',
-    currentPlan: 'company',
-    status: 'active',
-    avatar: avatar6,
-  },
-  {
-    id: 7,
-    fullName: 'Breena Gallemore',
-    company: 'Jazzy PVT LTD',
-    role: 'subscriber',
-    username: 'bgallemore6',
-    country: 'Canada',
-    contact: '(825) 977-8152',
-    email: 'bgallemore6@boston.com',
-    currentPlan: 'company',
-    status: 'pending',
-    avatar: avatar7,
-  },
-  {
-    id: 8,
-    fullName: 'Kathryne Liger',
-    company: 'Pixoboo PVT LTD',
-    role: 'author',
-    username: 'kliger7',
-    country: 'France',
-    contact: '(187) 440-0934',
-    email: 'kliger7@vinaora.com',
-    currentPlan: 'enterprise',
-    status: 'pending',
-    avatar: avatar8,
-  },
-]
+// Computed para procesar usuarios y agregar avatar por defecto
+const usuariosConAvatar = computed(() => {
+  return usuarios.value.map(usuario => ({
+    ...usuario,
+    // Generar iniciales para el avatar
+    iniciales: usuario.nombre_completo.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
+  }))
+})
 
 const resolveUserRoleVariant = role => {
   const roleLowerCase = role.toLowerCase()
-  if (roleLowerCase === 'subscriber')
-    return {
-      color: 'success',
-      icon: 'ri-user-line',
-    }
-  if (roleLowerCase === 'author')
-    return {
-      color: 'error',
-      icon: 'ri-computer-line',
-    }
-  if (roleLowerCase === 'maintainer')
+  if (roleLowerCase === 'docente')
     return {
       color: 'info',
-      icon: 'ri-pie-chart-line',
+      icon: 'ri-user-line',
     }
-  if (roleLowerCase === 'editor')
+  if (roleLowerCase === 'director')
+    return {
+      color: 'error',
+      icon: 'ri-vip-crown-line',
+    }
+  if (roleLowerCase === 'administrador_academico')
     return {
       color: 'warning',
-      icon: 'ri-edit-box-line',
-    }
-  if (roleLowerCase === 'admin')
-    return {
-      color: 'primary',
-      icon: 'ri-vip-crown-line',
+      icon: 'ri-admin-line',
     }
   
   return {
-    color: 'success',
+    color: 'secondary',
     icon: 'ri-user-line',
   }
 }
 
-const resolveUserStatusVariant = stat => {
-  const statLowerCase = stat.toLowerCase()
-  if (statLowerCase === 'pending')
-    return 'warning'
-  if (statLowerCase === 'active')
-    return 'success'
-  if (statLowerCase === 'inactive')
-    return 'secondary'
-  
-  return 'primary'
+const resolveUserStatusVariant = estado => {
+  const estadoLowerCase = estado.toLowerCase()
+  return estadoLowerCase === 'activo' ? 'success' : 'secondary'
 }
+
+// Función para mostrar texto del estado
+const getEstadoTexto = (estado) => {
+  const estadoLowerCase = estado.toLowerCase()
+  return estadoLowerCase === 'activo' ? 'Activo' : 'Inactivo'
+}
+
+// Methods
+const loadUsuarios = async () => {
+  try {
+    loading.value = true
+    error.value = null
+    const response = await getUsuarios()
+    usuarios.value = response.usuarios || []
+  } catch (err) {
+    error.value = 'Error al cargar los usuarios'
+    // El error ya se imprime en la API, no necesitamos duplicarlo aquí
+  } finally {
+    loading.value = false
+  }
+}
+
+const editUser = (user) => {
+  console.log('Editar usuario:', user)
+  // Aquí iría la lógica para editar usuario
+}
+
+const deleteUser = (user) => {
+  console.log('Eliminar usuario:', user)
+  // Aquí iría la lógica para eliminar usuario
+}
+
+// Lifecycle
+onMounted(() => {
+  loadUsuarios()
+})
 </script>
 
 <template>
-  <VCard>
-    <VDataTable
+  <VCard title="Lista de Usuarios">
+    <!-- Toolbar con búsqueda y botón agregar -->
+    <VCardText>
+      <VRow class="mb-3">
+        <VCol
+          cols="12"
+          sm="6"
+          md="4"
+        >
+          <VTextField
+            v-model="search"
+            prepend-inner-icon="ri-search-line"
+            label="Buscar usuarios..."
+            variant="outlined"
+            clearable
+            hide-details
+          />
+        </VCol>
+        <VCol
+          cols="12"
+          sm="6"
+          md="8"
+          class="d-flex justify-end align-center"
+        >
+          <VBtn
+            color="primary"
+            prepend-icon="ri-add-line"
+          >
+            Agregar Usuario
+          </VBtn>
+        </VCol>
+      </VRow>
+    </VCardText>
+
+    <!-- Tabla de datos -->
+    <TablaReutilizable
+      v-model="selectedUsers"
       :headers="headers"
-      :items="userData"
+      :items="usuariosConAvatar"
+      :search="search"
+      :loading="loading"
       item-value="id"
-      class="text-no-wrap"
+      show-select
     >
-      <!-- User -->
-      <template #item.username="{ item }">
+      <!-- Usuario -->
+      <template #item.nombre_completo="{ item }">
         <div class="d-flex align-center gap-x-4">
           <VAvatar
             size="34"
-            :variant="!item.avatar ? 'tonal' : undefined"
-            :color="!item.avatar ? resolveUserRoleVariant(item.role).color : undefined"
+            variant="tonal"
+            :color="resolveUserRoleVariant(item.rol).color"
           >
-            <VImg
-              v-if="item.avatar"
-              :src="item.avatar"
-            />
+            <span class="text-sm font-weight-medium">
+              {{ item.iniciales }}
+            </span>
           </VAvatar>
 
           <div class="d-flex flex-column">
             <h6 class="text-h6 font-weight-medium user-list-name">
-              {{ item.fullName }}
+              {{ item.nombre_completo }}
             </h6>
-
-            <span class="text-sm text-medium-emphasis">@{{ item.username }}</span>
+            <span class="text-sm text-medium-emphasis">DUI: {{ item.dui }}</span>
           </div>
         </div>
       </template>
-      <!-- Role -->
-      <template #item.role="{ item }">
-        <div class="d-flex gap-4">
+
+      <!-- Rol -->
+      <template #item.rol="{ item }">
+        <div class="d-flex align-center gap-2">
           <VIcon
-            :icon="resolveUserRoleVariant(item.role).icon"
-            :color="resolveUserRoleVariant(item.role).color"
+            :icon="resolveUserRoleVariant(item.rol).icon"
+            :color="resolveUserRoleVariant(item.rol).color"
             size="22"
           />
-          <div class="text-capitalize text-high-emphasis">
-            {{ item.role }}
-          </div>
+          <span class="text-capitalize text-high-emphasis">
+            {{ item.rol === 'administrador_academico' ? 'Administrador' : item.rol }}
+          </span>
         </div>
       </template>
-      <!-- Plan -->
-      <template #item.plan="{ item }">
-        <span class="text-capitalize text-high-emphasis">{{ item.currentPlan }}</span>
-      </template>
-      <!-- Status -->
-      <template #item.status="{ item }">
+
+      <!-- Estado -->
+      <template #item.estado="{ item }">
         <VChip
-          :color="resolveUserStatusVariant(item.status)"
+          :color="resolveUserStatusVariant(item.estado)"
           size="small"
           class="text-capitalize"
         >
-          {{ item.status }}
+          {{ getEstadoTexto(item.estado) }}
         </VChip>
       </template>
 
-      <template #bottom />
-    </VDataTable>
+      <!-- Acciones -->
+      <template #item.actions="{ item }">
+        <div class="d-flex align-center gap-2">
+          <VBtn
+            icon
+            size="small"
+            color="info"
+            variant="text"
+            @click="editUser(item)"
+          >
+            <VIcon
+              size="20"
+              icon="ri-edit-line"
+            />
+            <VTooltip
+              activator="parent"
+              location="top"
+            >
+              Editar
+            </VTooltip>
+          </VBtn>
+
+          <VBtn
+            icon
+            size="small"
+            color="error"
+            variant="text"
+            @click="deleteUser(item)"
+          >
+            <VIcon
+              size="20"
+              icon="ri-delete-bin-line"
+            />
+            <VTooltip
+              activator="parent"
+              location="top"
+            >
+              Eliminar
+            </VTooltip>
+          </VBtn>
+        </div>
+      </template>
+
+      <!-- Pie de página personalizado -->
+      <template #bottom>
+        <VDivider />
+        <div class="d-flex align-center justify-space-between flex-wrap gap-3 pa-5 pt-3">
+          <p class="text-sm text-disabled mb-0">
+            {{ selectedUsers.length }} de {{ usuarios.length }} usuarios seleccionados
+          </p>
+        </div>
+      </template>
+    </TablaReutilizable>
   </VCard>
 </template>

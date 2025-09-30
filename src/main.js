@@ -62,14 +62,19 @@ axios.interceptors.response.use(
     let message = ''
     let type = 'error'
 
+    // Intentar obtener el mensaje del JSON response
+    const responseMessage = error.response?.data?.message || error.response?.data?.error
+
     if (!error.response || error.response.status === 0) {
       message = 'No se pudo establecer conexión con el servidor'
+    } else if (error.response.status === 403) {
+      message = responseMessage || 'No tienes permisos para realizar esta acción'
     } else if (error.response.status === 422) {
-      message = 'Por favor verifica los datos ingresados'
+      message = responseMessage || 'Por favor verifica los datos ingresados'
     } else if (error.response.status === 500) {
-      message = 'Error de servidor'
+      message = responseMessage || 'Error de servidor'
     } else if (error.response.status >= 400 && error.response.status < 500) {
-      message = 'Por favor verifica los datos ingresados'
+      message = responseMessage || 'Por favor verifica los datos ingresados'
     }
 
     alertStore.showAlert({
