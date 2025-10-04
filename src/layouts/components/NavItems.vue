@@ -336,4 +336,12 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/modulo2/secciones-pages',
     }"
   />
+
+  <VerticalNavLink
+    :item="{
+      title: 'Consulta de Secciones',
+      icon: 'ri-search-eye-line',
+      to: '/modulo2/consulta-secciones',
+    }"
+  />
 </template>

@@ -70,6 +70,14 @@ export const routes = [
         path: 'modulo2/secciones-pages',
         component: () => import('@/pages/modulo2/secciones-pages.vue'),
       },
+      {
+        path: 'modulo2/consulta-secciones',
+        component: () => import('@/pages/modulo2/consulta-secciones.vue'),
+      },
+      {
+        path: 'modulo2/consulta-secciones/detalle/:id',
+        component: () => import('@/pages/modulo2/consulta-secciones/detalle/[id].vue'),
+      },
     ],
   },
   {
