@@ -5,10 +5,11 @@
       <v-form ref="form" v-model="valid" lazy-validation>
         <v-row>
           <v-col cols="12" sm="6">
-            <v-text-field
-              v-model="seccion.jornada"
-              label="Jornada"
-              :rules="[v => !!v || 'Campo requerido']"
+            <v-select
+              v-model="seccion.grado"
+              :items="grados"
+              label="Grado"
+              :rules="[v => !!v || 'Campo requerido', validarGrado]"
               required
             />
           </v-col>
@@ -21,20 +22,10 @@
             />
           </v-col>
           <v-col cols="12" sm="6">
-            <v-select
-              v-model="seccion.estado"
-              :items="estados"
-              label="Estado"
+            <v-text-field
+              v-model="seccion.jornada"
+              label="Jornada"
               :rules="[v => !!v || 'Campo requerido']"
-              required
-            />
-          </v-col>
-          <v-col cols="12" sm="6">
-            <v-select
-              v-model="seccion.grado"
-              :items="grados"
-              label="Grado"
-              :rules="[v => !!v || 'Campo requerido', validarGrado]"
               required
             />
           </v-col>
@@ -65,16 +56,29 @@
               required
             />
           </v-col>
+          <v-col cols="12" sm="6">
+            <v-select
+              v-model="seccion.estado"
+              :items="estados"
+              label="Estado"
+              :rules="[v => !!v || 'Campo requerido']"
+              required
+            />
+          </v-col>
         </v-row>
-  <v-btn color="primary" @click="submitForm">{{ modoClonar ? 'Clonar' : 'Guardar' }}</v-btn>
-  <v-btn color="secondary" @click="$emit('cancelar')" v-if="modoClonar">Cancelar</v-btn>
+  <v-btn color="primary" @click="submitForm" class="mt-4">
+    {{ modoClonar ? 'Clonar' : 'Guardar' }}
+  </v-btn>
+  <v-btn color="secondary" @click="$emit('cancelar')" v-if="modoClonar" class="mt-4 ml-2">
+    Cancelar
+  </v-btn>
       </v-form>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-import { crearSeccion, editarSeccion } from '../../apis/secciones'
+import { crearSeccion, editarSeccion } from '../../apis/secciones';
 
 export default {
   name: 'FormularioSeccion',

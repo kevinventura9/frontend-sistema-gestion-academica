@@ -7,11 +7,38 @@
         :items="secciones"
         item-key="id"
         class="elevation-1"
+        id="tabla-secciones"
       >
+        <template v-slot:header.grado>
+          <span>Grado</span>
+        </template>
+        <template v-slot:header.codigo>
+          <span>Código</span>
+        </template>
+        <template v-slot:header.jornada>
+          <span>Jornada</span>
+        </template>
+        <template v-slot:header.capacidad_maxima>
+          <span>Capacidad Máxima</span>
+        </template>
+        <template v-slot:header.plan_estudio_id>
+          <span>Plan de Estudio</span>
+        </template>
+        <template v-slot:header.anio_lectivo>
+          <span>Año Lectivo</span>
+        </template>
+        <template v-slot:header.estado>
+          <span>Estado</span>
+        </template>
+        <template v-slot:header.acciones>
+          <span>Acciones</span>
+        </template>
         <template v-slot:item.acciones="{ item }">
-         <v-btn color="primary" @click="$emit('editar-seccion', item)">Editar</v-btn>
-         <v-btn color="error" @click="eliminar(item.id)">Eliminar</v-btn>
-         <v-btn color="secondary" @click="abrirClonar(item)">Clonar</v-btn>
+          <div style="display: flex; gap: 8px;">
+            <v-btn color="primary" @click="$emit('editar-seccion', item)">Editar</v-btn>
+            <v-btn color="secondary" @click="abrirClonar(item)">Clonar</v-btn>
+            <v-btn color="error" @click="eliminar(item.id)">Eliminar</v-btn>
+          </div>
         </template>
       </v-data-table>
     </v-card-text>
@@ -19,21 +46,20 @@
 </template>
 
 <script>
-import { eliminarSeccion, obtenerSecciones } from '../../apis/secciones'
-
+import { eliminarSeccion, obtenerSecciones } from '../../apis/secciones';
 export default {
   name: 'ListaSecciones',
   data() {
     return {
       secciones: [],
       headers: [
-        { text: 'Jornada', value: 'jornada' },
-        { text: 'Código', value: 'codigo' },
-        { text: 'Estado', value: 'estado' },
         { text: 'Grado', value: 'grado' },
+        { text: 'Código', value: 'codigo' },
+        { text: 'Jornada', value: 'jornada' },
         { text: 'Capacidad Máxima', value: 'capacidad_maxima' },
         { text: 'Plan de Estudio', value: 'plan_estudio_id' },
         { text: 'Año Lectivo', value: 'anio_lectivo' },
+        { text: 'Estado', value: 'estado' },
         { text: 'Acciones', value: 'acciones', sortable: false }
       ]
     }
@@ -46,7 +72,7 @@ export default {
       try {
         this.secciones = await obtenerSecciones()
       } catch (error) {
-        // Aquí puedes mostrar una alerta si lo deseas
+        // Aquí puedes mostrar una alerta 
       }
     },
     async eliminar(id) {
@@ -64,4 +90,3 @@ export default {
   }
 }
 </script>
-
