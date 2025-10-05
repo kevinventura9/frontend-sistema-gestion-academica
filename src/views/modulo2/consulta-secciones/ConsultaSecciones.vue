@@ -14,7 +14,7 @@
             <v-select v-model="filtros.grado" :items="grados" label="Grado" clearable />
           </v-col>
           <v-col cols="12" sm="3">
-            <v-select v-model="filtros.materia" :items="materias" label="Materia" clearable />
+         <!-- Filtro de materia eliminado -->
           </v-col>
         </v-row>
         <v-btn color="primary" class="mb-4" @click="consultarSecciones">Buscar</v-btn>
@@ -23,6 +23,24 @@
           :items="secciones"
           class="elevation-1"
         >
+          <template v-slot:header.jornada>
+            <span>Jornada</span>
+          </template>
+          <template v-slot:header.codigo>
+            <span>Código</span>
+          </template>
+          <template v-slot:header.estado>
+            <span>Estado</span>
+          </template>
+          <template v-slot:header.grado>
+            <span>Grado</span>
+          </template>
+          <template v-slot:header.anio_lectivo>
+            <span>Año Lectivo</span>
+          </template>
+          <template v-slot:header.acciones>
+            <span>Acciones</span>
+          </template>
           <template v-slot:item.acciones="{ item }">
             <v-btn color="info" @click="consultarDetalle(item.id)">Consultar</v-btn>
           </template>
@@ -42,13 +60,13 @@ export default {
         anio: null,
         estado: null,
         grado: null,
-        materia: null
       },
+        // Materia eliminada del filtro
       anios: [2024, 2025, 2026],
-      estados: ['Abierta', 'Cerrada', 'Activa', 'Inactiva'],
+  estados: ['Abierta', 'Cerrada'],
       grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'],
       materias: [
-        'Matemáticas', 'Ciencias', 'Artística', 'Lenguaje', 'Sociales', 'Caligrafía', 'Educación Física'
+        'Matemáticas', 'Ciencias', 'Artistica', 'Lenguaje', 'Sociales', 'Caligrafía', 'Educación Fisica'
       ],
       headers: [
         { text: 'Jornada', value: 'jornada' },
@@ -56,7 +74,6 @@ export default {
         { text: 'Estado', value: 'estado' },
         { text: 'Grado', value: 'grado' },
         { text: 'Año Lectivo', value: 'anio_lectivo' },
-        { text: 'Materia', value: 'materia' },
         { text: 'Alumnos', value: 'alumnos' },
         { text: 'Calificaciones', value: 'calificaciones' },
         { text: 'Asistencia', value: 'asistencia' },
@@ -80,8 +97,8 @@ export default {
           anio_lectivo: this.filtros.anio,
           estado: this.filtros.estado,
           grado: this.filtros.grado,
-          materia: this.filtros.materia
         };
+         // Materia eliminada de los parámetros
         const response = await axios.get('http://localhost:8000/api/secciones', { params });
         // Ordenar por grado ascendente
         const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'];

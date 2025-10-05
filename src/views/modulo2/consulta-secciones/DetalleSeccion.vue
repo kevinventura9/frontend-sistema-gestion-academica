@@ -25,15 +25,45 @@
         <v-divider class="my-4" />
         <div>
           <h3>Alumnos</h3>
-          <v-data-table :headers="headersAlumnos" :items="detalle.alumnos || []" class="mb-4" />
+          <v-data-table :headers="headersAlumnos" :items="detalle.alumnos || []" class="mb-4">
+            <template v-slot:header.id>
+              <span>ID</span>
+            </template>
+            <template v-slot:header.nombre>
+              <span>Nombre</span>
+            </template>
+            <template v-slot:header.apellido>
+              <span>Apellido</span>
+            </template>
+            <template v-slot:header.email>
+              <span>Correo</span>
+            </template>
+          </v-data-table>
         </div>
         <div>
           <h3>Calificaciones ({{ materiaSeleccionada ? (materias.find(m => m.id === materiaSeleccionada)?.nombre || '') : '' }})</h3>
-          <v-data-table :headers="headersCalificaciones" :items="calificacionesMateria" class="mb-4" />
+          <v-data-table :headers="headersCalificaciones" :items="calificacionesMateria" class="mb-4">
+            <template v-slot:header.alumno>
+              <span>Alumno</span>
+            </template>
+            <template v-slot:header.nota>
+              <span>Nota</span>
+            </template>
+          </v-data-table>
         </div>
         <div>
           <h3>Asistencia</h3>
-          <v-data-table :headers="headersAsistencia" :items="asistenciasMapeadas" />
+          <v-data-table :headers="headersAsistencia" :items="asistenciasMapeadas">
+            <template v-slot:header.alumno>
+              <span>Alumno</span>
+            </template>
+            <template v-slot:header.fecha>
+              <span>Fecha</span>
+            </template>
+            <template v-slot:header.estado>
+              <span>Estado</span>
+            </template>
+          </v-data-table>
         </div>
       </v-card-text>
     </v-card>
