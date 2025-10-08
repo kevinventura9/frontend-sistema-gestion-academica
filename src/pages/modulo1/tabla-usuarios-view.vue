@@ -2,6 +2,7 @@
 import { getUsuarios } from '@/api/usuarios.js'
 import TablaReutilizable from '@/components/TablaReutilizable.vue'
 import { computed, onMounted, ref } from 'vue'
+import FormRegistoUsuarioModal from './form-registo-usuario-modal.vue'
 
 
 // Reactive data
@@ -10,6 +11,7 @@ const selectedUsers = ref([])
 const usuarios = ref([])
 const loading = ref(false)
 const error = ref(null)
+const mostrarModalUsuario = ref(false)
 
 const headers = [
   {
@@ -108,6 +110,20 @@ const deleteUser = (user) => {
   // Aquí iría la lógica para eliminar usuario
 }
 
+// Función para abrir el modal de agregar usuario
+const abrirModalUsuario = () => {
+  mostrarModalUsuario.value = true
+}
+
+// Función para manejar cuando se crea un usuario
+const manejarUsuarioCreado = (nuevoUsuario) => {
+  console.log('Nuevo usuario creado:', nuevoUsuario)
+  // Aquí puedes agregar la lógica para enviar al backend
+  // Por ejemplo: await crearUsuario(nuevoUsuario)
+  // Luego recargar la lista
+  loadUsuarios()
+}
+
 // Lifecycle
 onMounted(() => {
   loadUsuarios()
@@ -142,6 +158,7 @@ onMounted(() => {
           <VBtn
             color="primary"
             prepend-icon="ri-add-line"
+            @click="abrirModalUsuario"
           >
             Agregar Usuario
           </VBtn>
@@ -259,5 +276,11 @@ onMounted(() => {
         </div>
       </template>
     </TablaReutilizable>
+
+    <!-- Modal de agregar usuario -->
+    <FormRegistoUsuarioModal
+      v-model:is-visible="mostrarModalUsuario"
+      @usuario-creado="manejarUsuarioCreado"
+    />
   </VCard>
 </template>

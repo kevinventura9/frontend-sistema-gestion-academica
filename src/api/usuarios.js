@@ -9,3 +9,13 @@ export const getUsuarios = async () => {
     throw error.response ? error.response.data : error
   }
 }
+
+export const registrarUsuario = async (datosUsuario) => {
+  try {
+    const response = await axios.post('/registrar', datosUsuario)
+    return response.data
+  } catch (error) {
+    console.error('Error al registrar usuario:', error)
+    throw error.response ? error.response.data : error
+  }
+}
