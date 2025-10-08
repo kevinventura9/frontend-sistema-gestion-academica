@@ -46,7 +46,7 @@ export const themes = {
     variables: {
       'code-color': '#42A5F5',
       'overlay-scrim-background': '#2E263D',
-      'tooltip-background': '#1A0E33',
+      'tooltip-background': '#424242',
       'overlay-scrim-opacity': 0.5,
       'hover-opacity': 0.04,
       'focus-opacity': 0.1,
@@ -115,7 +115,7 @@ export const themes = {
     variables: {
       'code-color': '#42A5F5',
       'overlay-scrim-background': '#2D2D2D',
-      'tooltip-background': '#424242',
+      'tooltip-background': '#DADADAFF',
       'overlay-scrim-opacity': 0.5,
       'hover-opacity': 0.04,
       'focus-opacity': 0.1,

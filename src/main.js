@@ -59,16 +59,38 @@ axios.interceptors.response.use(
   },
   async (error) => {
     const alertStore = useAlertStore()
+    const authStore = useAuthStore()
     let message = ''
     let type = 'error'
 
     // Intentar obtener el mensaje del JSON response
     const responseMessage = error.response?.data?.message || error.response?.data?.error
 
+    // No interferir con las rutas de autenticación (login, register)
+    const isAuthRoute = error.config?.url?.includes('/login') || 
+                       error.config?.url?.includes('/register') ||
+                       window.location.pathname === '/login' ||
+                       window.location.pathname === '/register'
+
+    // Si es una ruta de autenticación, no mostrar alertas automáticas
+    // Dejar que el componente maneje sus propios errores
+    if (isAuthRoute) {
+      return Promise.reject(error)
+    }
+
     if (!error.response || error.response.status === 0) {
       message = 'No se pudo establecer conexión con el servidor'
+    } else if (error.response.status === 401) {
+      // Token inválido o expirado - solo en rutas protegidas
+      authStore.logout()
+      message = 'Tu sesión ha expirado. Por favor inicia sesión nuevamente.'
+      // Redirigir a login con un pequeño delay
+      setTimeout(() => {
+        window.location.href = '/login'
+      }, 1500)
     } else if (error.response.status === 403) {
       message = responseMessage || 'No tienes permisos para realizar esta acción'
+      type = 'warning'
     } else if (error.response.status === 422) {
       message = responseMessage || 'Por favor verifica los datos ingresados'
     } else if (error.response.status === 500) {

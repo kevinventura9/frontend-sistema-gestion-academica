@@ -77,8 +77,12 @@ export const useAuthStore = defineStore('auth', {
       const token = localStorage.getItem('token')
       if (token) {
         this.token = token
+        // Solo marca como autenticado si el token existe
+        // El interceptor de axios validará automáticamente el token
         this.isAuthenticated = true
-        // Aquí podrías verificar el token con la API si es necesario
+      } else {
+        // Si no hay token, asegurar que no esté autenticado
+        this.isAuthenticated = false
       }
     }
   }

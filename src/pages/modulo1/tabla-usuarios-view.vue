@@ -57,8 +57,8 @@ const resolveUserRoleVariant = role => {
     }
   if (roleLowerCase === 'director')
     return {
-      color: 'error',
-      icon: 'ri-vip-crown-line',
+      color: '#B042DBFF',
+      icon: 'ri-user-star-line',
     }
   if (roleLowerCase === 'administrador_academico')
     return {

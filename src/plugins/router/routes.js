@@ -7,6 +7,7 @@ export const routes = [
       {
         path: 'dashboard',
         component: () => import('@/pages/dashboard.vue'),
+        meta: { requiresAuth: true }
       },  
       {
         path: 'account-settings',
