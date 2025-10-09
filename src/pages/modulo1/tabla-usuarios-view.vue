@@ -2,6 +2,7 @@
 import { getUsuarios } from '@/api/usuarios.js'
 import TablaReutilizable from '@/components/TablaReutilizable.vue'
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import FormRegistoUsuarioModal from './form-registo-usuario-modal.vue'
 
 
@@ -12,6 +13,7 @@ const usuarios = ref([])
 const loading = ref(false)
 const error = ref(null)
 const mostrarModalUsuario = ref(false)
+const router = useRouter()
 
 const headers = [
   {
@@ -59,7 +61,7 @@ const resolveUserRoleVariant = role => {
     }
   if (roleLowerCase === 'director')
     return {
-      color: '#B042DBFF',
+      color: 'director-purple',
       icon: 'ri-user-star-line',
     }
   if (roleLowerCase === 'administrador_academico')
@@ -101,8 +103,9 @@ const loadUsuarios = async () => {
 }
 
 const editUser = (user) => {
-  console.log('Editar usuario:', user)
-  // Aquí iría la lógica para editar usuario
+  console.log('Redirigiendo a editar usuario:', user)
+  // Redirigir a la ruta del perfil del usuario específico
+  router.push(`/usuarios/${user.id}`)
 }
 
 const deleteUser = (user) => {
@@ -160,7 +163,7 @@ onMounted(() => {
             prepend-icon="ri-add-line"
             @click="abrirModalUsuario"
           >
-            Agregar Usuario
+            Agregar usuario
           </VBtn>
         </VCol>
       </VRow>

@@ -1,0 +1,87 @@
+<script setup>
+import PerfilUsuarioCuenta from '@/pages/modulo1/perfil-card-datos-view.vue'
+import PerfilUsuarioHistorial from '@/pages/modulo1/perfil-card-historial-view.vue'
+import PerfilUsuarioSeguridad from '@/pages/modulo1/perfil-card-seguridad-view.vue'
+import PerfilUsuarioPermisos from '@/pages/modulo1/perfil-card-permisos-view.vue'
+import { ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
+const activeTab = ref(route.params.tab || 'cuenta')
+
+// Obtener el ID del usuario desde la ruta
+const userId = route.params.id
+
+// tabs
+const tabs = [
+  {
+    title: 'Cuenta',
+    icon: 'ri-group-line',
+    tab: 'cuenta',
+  },
+  {
+    title: 'Seguridad',
+    icon: 'ri-lock-line',
+    tab: 'seguridad',
+  },
+  {
+    title: 'Permisos',
+    icon: 'ri-shield-user-line',
+    tab: 'permisos',
+  },
+  {
+    title: 'Historial',
+    icon: 'ri-time-line',
+    tab: 'historial',
+  },
+]
+</script>
+
+<template>
+  <div>
+    <VTabs
+      v-model="activeTab"
+      show-arrows
+      class="v-tabs-pill"
+    >
+      <VTab
+        v-for="item in tabs"
+        :key="item.icon"
+        :value="item.tab"
+      >
+        <VIcon
+          size="20"
+          start
+          :icon="item.icon"
+        />
+        {{ item.title }}
+      </VTab>
+    </VTabs>
+
+    <VWindow
+      v-model="activeTab"
+      class="mt-5 disable-tab-transition"
+      :touch="false"
+    >
+      <!-- Cuenta -->
+      <VWindowItem value="cuenta">
+        <PerfilUsuarioCuenta :user-id="userId" />
+      </VWindowItem>
+
+      <!-- Seguridad -->
+      <VWindowItem value="seguridad">
+        <PerfilUsuarioSeguridad :user-id="userId" />
+      </VWindowItem>
+
+      <!-- Historial -->
+      <VWindowItem value="historial">
+        <PerfilUsuarioHistorial :user-id="userId" />
+      </VWindowItem>
+      
+      <!-- Permisos -->
+    <VWindowItem value="permisos">
+      <PerfilUsuarioPermisos :user-id="userId" />
+    </VWindowItem> 
+    </VWindow> 
+  </div>
+</template>

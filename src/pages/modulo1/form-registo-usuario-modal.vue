@@ -169,13 +169,7 @@ const enviarFormulario = async () => {
     // Manejar errores de validación
     if (error.errors) {
       formErrors.value = error.errors
-    } else {
-      // Error general
-      alertStore.showAlert({
-        message: error.message || 'Error al registrar usuario',
-        type: 'error'
-      })
-    }
+    } 
   } finally {
     loading.value = false
   }

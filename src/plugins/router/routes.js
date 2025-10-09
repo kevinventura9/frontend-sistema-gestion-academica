@@ -40,9 +40,15 @@ export const routes = [
         meta: { requiresAuth: true }
       },
       {
-        path: 'modulo1/usuarios-roles',
+        path: '/usuarios',
         component: () => import('@/pages/modulo1/usuarios-roles-page.vue'),
         meta: { requiresAuth: true }
+      },
+      {
+        path: '/usuarios/:id',
+        component: () => import('@/pages/modulo1/perfil-usuario-page.vue'),
+        meta: { requiresAuth: true },
+        props: true
       },
     ],
   },
