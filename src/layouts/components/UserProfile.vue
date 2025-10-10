@@ -47,7 +47,7 @@ const handleLogout = () => {
 
 const goToProfile = () => {
   // Redirigir al perfil del usuario
-  router.push('/account-settings')
+  router.push('/perfil')
 }
 </script>
 

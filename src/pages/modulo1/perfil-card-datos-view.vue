@@ -1,5 +1,5 @@
 <script setup>
-import { actualizarUsuario, getUsuarioPorId } from '@/api/usuarios'
+import { actualizarUsuario, getUsuarioPorId, getMiPerfil, actualizarMiPerfil } from '@/api/usuarios'
 import { useValidaciones } from '@/composables/useValidaciones'
 import { useAlertStore } from '@/stores/alertas'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -8,7 +8,11 @@ import { computed, onMounted, ref, watch } from 'vue'
 const props = defineProps({
   userId: {
     type: [String, Number],
-    required: true
+    default: null
+  },
+  esMiPerfil: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -60,31 +64,62 @@ const formatearFechaParaInput = (fechaISO) => {
 
 // Función para cargar datos del usuario por ID
 const cargarUsuario = async () => {
-  try {
-    loading.value = true
-    const response = await getUsuarioPorId(props.userId)
-    usuario.value = response.usuario
-    // Formatear la fecha de nacimiento para el input
-    const usuarioFormateado = {
-      ...response.usuario,
-      fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
+  if (props.esMiPerfil) {
+    // Cargar mi perfil
+    try {
+      loading.value = true
+      const response = await getMiPerfil()
+      usuario.value = response.usuario
+      // Formatear la fecha de nacimiento para el input
+      const usuarioFormateado = {
+        ...response.usuario,
+        fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
+      }
+      accountDataLocal.value = structuredClone(usuarioFormateado)
+      emit('usuarioCargado', true) // Emitir evento de usuario cargado
+    } catch (error) {
+      emit('usuarioCargado', false) // Notificar fallo
+      console.error('Error al cargar mi perfil:', error)
+      alertStore.showAlert({
+        message: error.message || error.error || 'Error al cargar los datos del perfil',
+        type: 'error'
+      })
+    } finally {
+      loading.value = false
     }
-    accountDataLocal.value = structuredClone(usuarioFormateado)
-    emit('usuarioCargado', true) // Emitir evento de usuario cargado
-  } catch (error) {
-    emit('usuarioCargado', false) // Notificar fallo
-    console.error('Error al cargar usuario:', error)
-    alertStore.showAlert({
-      message: error.message ||error.error || 'Error al cargar los datos del usuario',
-      type: 'error'
-    })
-  } finally {
-    loading.value = false
+  } else {
+    // Cargar usuario por ID (funcionalidad existente)
+    if (!props.userId) {
+      emit('usuarioCargado', false)
+      return
+    }
+    
+    try {
+      loading.value = true
+      const response = await getUsuarioPorId(props.userId)
+      usuario.value = response.usuario
+      // Formatear la fecha de nacimiento para el input
+      const usuarioFormateado = {
+        ...response.usuario,
+        fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
+      }
+      accountDataLocal.value = structuredClone(usuarioFormateado)
+      emit('usuarioCargado', true) // Emitir evento de usuario cargado
+    } catch (error) {
+      emit('usuarioCargado', false) // Notificar fallo
+      console.error('Error al cargar usuario:', error)
+      alertStore.showAlert({
+        message: error.message ||error.error || 'Error al cargar los datos del usuario',
+        type: 'error'
+      })
+    } finally {
+      loading.value = false
+    }
   }
 }
 
-// Watcher para recargar cuando cambie el userId
-watch(() => props.userId, () => {
+// Watcher para recargar cuando cambie el userId o esMiPerfil
+watch(() => [props.userId, props.esMiPerfil], () => {
   cargarUsuario()
 }, { immediate: true })
 
@@ -143,8 +178,8 @@ const resetForm = () => {
   limpiarErrores()
 }
 
-// Función para guardar cambios
-const saveChanges = async () => {
+// Función para guardar mi perfil (sin rol ni estado)
+const guardarMiPerfil = async () => {
   // Validar usando el composable (sin password)
   if (!ejecutarValidacion(accountDataLocal.value, false)) {
     alertStore.showAlert({
@@ -157,7 +192,70 @@ const saveChanges = async () => {
   saving.value = true
 
   try {
-    // Llamar a la API para actualizar el usuario
+    // Crear objeto con solo los campos permitidos para mi perfil
+    const datosParaMiPerfil = {
+      nombre_completo: accountDataLocal.value.nombre_completo,
+      email: accountDataLocal.value.email,
+      dui: accountDataLocal.value.dui,
+      telefono: accountDataLocal.value.telefono,
+      fecha_nacimiento: accountDataLocal.value.fecha_nacimiento
+    }
+    
+    const response = await actualizarMiPerfil(datosParaMiPerfil)
+    
+    // Actualizar datos locales solo en caso de éxito
+    const usuarioActualizado = {
+      ...response.usuario,
+      fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
+    }
+    
+    // Actualizar tanto usuario como accountDataLocal
+    usuario.value = response.usuario
+    accountDataLocal.value = structuredClone(usuarioActualizado)
+    
+    // Limpiar errores después del éxito
+    limpiarErrores()
+    
+    // Mostrar mensaje de éxito
+    alertStore.showAlert({
+      message: response.message || 'Perfil actualizado exitosamente',
+      type: 'success'
+    })
+    
+  } catch (error) {
+    console.error('Error al actualizar perfil:', error)
+    
+    // Manejar errores de validación del servidor
+    if (error.errors) {
+      formErrors.value = error.errors
+    }
+    
+    // Mostrar mensaje de error
+    alertStore.showAlert({
+      message: error.error || error.message || 'Error al actualizar el perfil',
+      type: 'warning'
+    })
+    
+  } finally {
+    saving.value = false
+  }
+}
+
+// Función para guardar cambios de usuario (edición completa)
+const guardarCambiosUsuario = async () => {
+  // Validar usando el composable (sin password)
+  if (!ejecutarValidacion(accountDataLocal.value, false)) {
+    alertStore.showAlert({
+      message: 'Por favor, corrija los errores en el formulario',
+      type: 'error'
+    })
+    return
+  }
+
+  saving.value = true
+
+  try {
+    // Actualizar usuario por ID (funcionalidad existente con todos los campos)
     const response = await actualizarUsuario(props.userId, accountDataLocal.value)
     
     // Actualizar datos locales solo en caso de éxito
@@ -183,7 +281,7 @@ const saveChanges = async () => {
     console.error('Error al actualizar usuario:', error)
     
     // Manejar error específico del director que no puede cambiar su propio rol
-    if (error.error.includes('director')) {
+    if (error.error && error.error.includes('director')) {
       // Revertir estado y rol a los valores originales del director
       accountDataLocal.value.estado = 'activo'
       accountDataLocal.value.rol = 'director'
@@ -202,6 +300,15 @@ const saveChanges = async () => {
     
   } finally {
     saving.value = false
+  }
+}
+
+// Función unificada para llamar la función correcta según el modo
+const saveChanges = async () => {
+  if (props.esMiPerfil) {
+    await guardarMiPerfil()
+  } else {
+    await guardarCambiosUsuario()
   }
 }
 
@@ -233,8 +340,11 @@ const manejarValidarFechaNacimiento = () => {
 
 // Computed para el título del card
 const cardTitle = computed(() => {
-  return 'Editar usuario'
+  return props.esMiPerfil ? 'Mi Perfil' : 'Editar usuario'
 })
+
+// Computed para acceder a props en template
+const esMiPerfil = computed(() => props.esMiPerfil)
 
 // Lifecycle
 onMounted(() => {
@@ -393,6 +503,7 @@ onMounted(() => {
 
               <!-- 👉 Rol -->
               <VCol
+                v-if="!esMiPerfil"
                 cols="12"
                 md="6"
               >
@@ -410,6 +521,7 @@ onMounted(() => {
 
               <!-- 👉 Estado -->
               <VCol
+                v-if="!esMiPerfil"
                 cols="12"
                 md="6"
               >
@@ -439,6 +551,7 @@ onMounted(() => {
                 </VBtn>
                 
                 <VBtn
+                  v-if="!esMiPerfil"
                   color="info"
                   variant="outlined"
                   :disabled="saving"

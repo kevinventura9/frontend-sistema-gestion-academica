@@ -1,5 +1,5 @@
 <script setup>
-import { getUsuarioPorId } from '@/api/usuarios'
+import { getUsuarioPorId, getMiPerfil } from '@/api/usuarios'
 import { useAlertStore } from '@/stores/alertas'
 import { computed, onMounted, ref, watch } from 'vue'
 
@@ -8,6 +8,10 @@ const props = defineProps({
   userId: {
     type: [String, Number],
     default: null
+  },
+  esMiPerfil: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -58,30 +62,51 @@ const antiguedadUsuario = computed(() => {
   return `${Math.floor(dias / 365)} ${Math.floor(dias / 365) === 1 ? 'año' : 'años'}`
 })
 
+// Computed para acceder a props en template
+const esMiPerfil = computed(() => props.esMiPerfil)
+
 // Función para cargar datos del usuario por ID
 const cargarUsuario = async () => {
-  if (!props.userId) {
-    usuario.value = null
-    return
-  }
-  
-  try {
-    loading.value = true
-    const response = await getUsuarioPorId(props.userId)
-    usuario.value = response.usuario
-  } catch (error) {
-    console.error('Error al cargar usuario:', error)
-    alertStore.showAlert({
-      message: error.message || error.error || 'Error al cargar los datos del usuario',
-      type: 'error'
-    })
-  } finally {
-    loading.value = false
+  if (props.esMiPerfil) {
+    // Cargar mi perfil
+    try {
+      loading.value = true
+      const response = await getMiPerfil()
+      usuario.value = response.usuario
+    } catch (error) {
+      console.error('Error al cargar mi perfil:', error)
+      alertStore.showAlert({
+        message: error.message || error.error || 'Error al cargar los datos del perfil',
+        type: 'error'
+      })
+    } finally {
+      loading.value = false
+    }
+  } else {
+    // Cargar usuario por ID (funcionalidad existente)
+    if (!props.userId) {
+      usuario.value = null
+      return
+    }
+    
+    try {
+      loading.value = true
+      const response = await getUsuarioPorId(props.userId)
+      usuario.value = response.usuario
+    } catch (error) {
+      console.error('Error al cargar usuario:', error)
+      alertStore.showAlert({
+        message: error.message || error.error || 'Error al cargar los datos del usuario',
+        type: 'error'
+      })
+    } finally {
+      loading.value = false
+    }
   }
 }
 
-// Watcher para recargar cuando cambie el userId
-watch(() => props.userId, () => {
+// Watcher para recargar cuando cambie el userId o esMiPerfil
+watch(() => [props.userId, props.esMiPerfil], () => {
   cargarUsuario()
 }, { immediate: true })
 
@@ -94,8 +119,8 @@ onMounted(() => {
 <template>
   <VRow>
     <VCol cols="12">
-      <!-- Mensaje cuando no hay userId -->
-      <VCard v-if="!userId" title="Historial de Usuario">
+      <!-- Mensaje cuando no hay userId y no es mi perfil -->
+      <VCard v-if="!userId && !esMiPerfil" title="Historial de Usuario">
         <VCardText class="text-center py-8">
           <VIcon
             icon="ri-information-line"

@@ -50,6 +50,11 @@ export const routes = [
         meta: { requiresAuth: true },
         props: true
       },
+      {
+        path: '/perfil',
+        component: () => import('@/pages/modulo1/mi-perfil-page.vue'),
+        meta: { requiresAuth: true }
+      },
     ],
   },
   {

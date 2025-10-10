@@ -1,5 +1,5 @@
 <script setup>
-import { actualizarUsuario } from '@/api/usuarios'
+import { actualizarUsuario, actualizarMiPerfil } from '@/api/usuarios'
 import { useAlertStore } from '@/stores/alertas'
 import { ref } from 'vue'
 
@@ -7,7 +7,11 @@ import { ref } from 'vue'
 const props = defineProps({
   userId: {
     type: [String, Number],
-    required: true
+    default: null
+  },
+  esMiPerfil: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -52,12 +56,20 @@ const cambiarPassword = async () => {
   saving.value = true
   
   try {
-    // Llamar a la API para actualizar solo la contraseña
+    // Preparar datos para la contraseña
     const datosPassword = {
       password: newPassword.value
     }
     
-    const response = await actualizarUsuario(props.userId, datosPassword)
+    let response
+    
+    if (props.esMiPerfil) {
+      // Actualizar mi perfil
+      response = await actualizarMiPerfil(datosPassword)
+    } else {
+      // Actualizar usuario por ID (funcionalidad existente)
+      response = await actualizarUsuario(props.userId, datosPassword)
+    }
     
     // Limpiar campos después del éxito
     newPassword.value = ''

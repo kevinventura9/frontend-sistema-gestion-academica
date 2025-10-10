@@ -49,3 +49,24 @@ export const eliminarUsuario = async (id) => {
     throw error.response ? error.response.data : error
   }
 }
+
+// APIs para Mi Perfil
+export const getMiPerfil = async () => {
+  try {
+    const response = await axios.get('/perfil')
+    return response.data
+  } catch (error) {
+    console.error('Error al obtener mi perfil:', error)
+    throw error.response ? error.response.data : error
+  }
+}
+
+export const actualizarMiPerfil = async (datosUsuario) => {
+  try {
+    const response = await axios.put('/perfil', datosUsuario)
+    return response.data
+  } catch (error) {
+    console.error('Error al actualizar mi perfil:', error)
+    throw error.response ? error.response.data : error
+  }
+}

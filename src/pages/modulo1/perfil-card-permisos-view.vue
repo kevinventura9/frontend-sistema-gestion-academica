@@ -1,4 +1,18 @@
 <script setup>
+import { ref } from 'vue'
+
+// Props para compatibilidad con mi perfil
+const props = defineProps({
+  userId: {
+    type: [String, Number],
+    default: null
+  },
+  esMiPerfil: {
+    type: Boolean,
+    default: false
+  }
+})
+
 const isCurrentPasswordVisible = ref(false)
 const isNewPasswordVisible = ref(false)
 const isConfirmPasswordVisible = ref(false)
