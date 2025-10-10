@@ -72,7 +72,7 @@ const cargarUsuario = async () => {
   } catch (error) {
     console.error('Error al cargar usuario:', error)
     alertStore.showAlert({
-      message: error.message || 'Error al cargar los datos del usuario',
+      message: error.message || error.error || 'Error al cargar los datos del usuario',
       type: 'error'
     })
   } finally {

@@ -1,6 +1,8 @@
 <script setup>
-import { getUsuarios } from '@/api/usuarios.js'
+import { eliminarUsuario, getUsuarios } from '@/api/usuarios.js'
+import ConfirmacionDialog from '@/components/ConfirmacionDialog.vue'
 import TablaReutilizable from '@/components/TablaReutilizable.vue'
+import { useAlertStore } from '@/stores/alertas.js'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import FormRegistoUsuarioModal from './form-registo-usuario-modal.vue'
@@ -13,7 +15,16 @@ const usuarios = ref([])
 const loading = ref(false)
 const error = ref(null)
 const mostrarModalUsuario = ref(false)
+const mostrarModalConfirmacion = ref(false)
+const usuarioAEliminar = ref(null)
+const mensajeConfirmacion = ref('')
 const router = useRouter()
+const alertStore = useAlertStore()
+
+const tipoConfirmacion = computed(() => ({
+  color: 'error',
+  icon: 'ri-delete-bin-line',
+}))
 
 const headers = [
   {
@@ -95,7 +106,7 @@ const loadUsuarios = async () => {
     const response = await getUsuarios()
     usuarios.value = response.usuarios || []
   } catch (err) {
-    error.value = 'Error al cargar los usuarios'
+    error.error = 'Error al cargar los usuarios'
     // El error ya se imprime en la API, no necesitamos duplicarlo aquí
   } finally {
     loading.value = false
@@ -108,9 +119,39 @@ const editUser = (user) => {
   router.push(`/usuarios/${user.id}`)
 }
 
-const deleteUser = (user) => {
-  console.log('Eliminar usuario:', user)
-  // Aquí iría la lógica para eliminar usuario
+const deleteUser = user => {
+  usuarioAEliminar.value = user
+  mensajeConfirmacion.value = `Estás por eliminar el siguiente usuario: ${user.nombre_completo} (${user.rol})`
+  mostrarModalConfirmacion.value = true
+}
+
+const confirmarEliminacion = async () => {
+  try {
+    loading.value = true
+    
+    const response = await eliminarUsuario(usuarioAEliminar.value.id)
+    
+    // Mostrar alerta de éxito
+    alertStore.showAlert({
+      type: 'success',
+      message: response.message,
+      timeout: 3000
+    })
+    
+    // Actualizar la tabla
+    await loadUsuarios()
+    
+  } catch (error) {
+    // Mostrar alerta de error
+    alertStore.showAlert({
+      type: 'error',
+      message: error.error || 'Error al eliminar usuario',
+      timeout: 5000
+    })
+  } finally {
+    loading.value = false
+    mostrarModalConfirmacion.value = false
+  }
 }
 
 // Función para abrir el modal de agregar usuario
@@ -168,6 +209,16 @@ onMounted(() => {
         </VCol>
       </VRow>
     </VCardText>
+
+    <!-- Modal de confirmación -->
+    <ConfirmacionDialog
+      v-model="mostrarModalConfirmacion"
+      :titulo="'Confirmar Eliminación'"
+      :mensaje="mensajeConfirmacion"
+      :tipo="tipoConfirmacion"
+      :texto-boton-confirmar="'Eliminar'"
+      @confirmar="confirmarEliminacion"
+    />
 
     <!-- Tabla de datos -->
     <TablaReutilizable
@@ -268,17 +319,15 @@ onMounted(() => {
           </VBtn>
         </div>
       </template>
-
-      <!-- Pie de página personalizado -->
-      <template #bottom>
-        <VDivider />
-        <div class="d-flex align-center justify-space-between flex-wrap gap-3 pa-5 pt-3">
-          <p class="text-sm text-disabled mb-0">
-            {{ selectedUsers.length }} de {{ usuarios.length }} usuarios seleccionados
-          </p>
-        </div>
-      </template>
     </TablaReutilizable>
+
+    <!-- Información de selección -->
+    <VDivider />
+    <div class="d-flex align-center justify-space-between flex-wrap gap-3 pa-5 pt-3">
+      <p class="text-sm text-disabled mb-0">
+        {{ selectedUsers.length }} de {{ usuarios.length }} usuarios seleccionados
+      </p>
+    </div>
 
     <!-- Modal de agregar usuario -->
     <FormRegistoUsuarioModal

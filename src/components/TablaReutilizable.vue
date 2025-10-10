@@ -1,5 +1,5 @@
 <script setup>
-defineProps({
+const props = defineProps({
   headers: {
     type: Array,
     required: true,
@@ -24,13 +24,23 @@ defineProps({
     type: String,
     default: 'id',
   },
+  modelValue: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue'])
+
+// Función para manejar la actualización de la selección
+const updateSelection = (value) => {
+  emits('update:modelValue', value)
+}
 </script>
 
 <template>
   <VDataTable
+    :model-value="modelValue"
     :headers="headers"
     :items="items"
     :search="search"
@@ -49,6 +59,7 @@ defineEmits(['update:modelValue'])
       { value: 100, title: '100' },
       { value: -1, title: 'Todos' }
     ]"
+    @update:model-value="updateSelection"
     v-bind="$attrs"
   >
     <!-- Slot para personalizar columnas -->

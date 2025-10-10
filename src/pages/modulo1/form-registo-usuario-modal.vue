@@ -1,6 +1,9 @@
 <script setup>
 import { registrarUsuario } from '@/api/usuarios'
+import { useValidaciones } from '@/composables/useValidaciones'
 import { useAlertStore } from '@/stores/alertas'
+import { useAuthStore } from '@/stores/auth'
+import { computed, ref } from 'vue'
 
 // Props del modal
 const props = defineProps({
@@ -16,6 +19,25 @@ const emit = defineEmits(['update:isVisible', 'usuario-creado'])
 // Store de alertas
 const alertStore = useAlertStore()
 
+// Store de autenticación
+const authStore = useAuthStore()
+
+// Composable de validaciones
+const {
+  formErrors,
+  limpiarErrores,
+  obtenerError,
+  ejecutarValidacion,
+  validarEmail,
+  validarDUI,
+  validarTelefono,
+  validarFechaNacimiento,
+  formatearDUI,
+  formatearTelefono,
+  rolesOptions,
+  estadoOptions
+} = useValidaciones()
+
 // Referencias reactivas para el formulario
 const email = ref('')
 const password = ref('')
@@ -28,19 +50,22 @@ const estado = ref('activo')
 
 // Estados para el formulario
 const loading = ref(false)
-const formErrors = ref({})
 
-// Opciones para los select
-const rolesOptions = [
-  { value: 'director', title: 'Director' },
-  { value: 'docente', title: 'Docente' },
-  { value: 'administrador_academico', title: 'Administrador Académico' }
-]
-
-const estadoOptions = [
-  { value: 'activo', title: 'Activo' },
-  { value: 'inactivo', title: 'Inactivo' }
-]
+// Opciones de rol filtradas según el usuario autenticado
+const rolesDisponibles = computed(() => {
+  const userRole = authStore.getUser?.rol
+  
+  if (userRole === 'director') {
+    // El director puede crear cualquier tipo de usuario
+    return rolesOptions
+  } else if (userRole === 'administrador_academico') {
+    // El administrador académico solo puede crear docentes
+    return rolesOptions.filter(rol => rol.value === 'docente')
+  }
+  
+  // Por defecto, si no hay rol definido o es otro rol, no puede crear usuarios
+  return []
+})
 
 // Función para cerrar el modal
 const cerrarModal = () => {
@@ -49,111 +74,29 @@ const cerrarModal = () => {
   emit('update:isVisible', false)
 }
 
-// Función para limpiar errores
-const limpiarErrores = () => {
-  formErrors.value = {}
-}
-
-// Validación básica de campos vacíos y formatos
-const validarCamposVacios = () => {
-  const errores = {}
-  
-  // Validar nombre completo
-  if (!nombre_completo.value.trim()) {
-    errores.nombre_completo = ['El nombre completo es obligatorio']
-  }
-  
-  // Validar email
-  if (!email.value.trim()) {
-    errores.email = ['El email es obligatorio']
-  } else {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(email.value)) {
-      errores.email = ['El formato del email no es válido']
-    }
-  }
-  
-  // Validar contraseña
-  if (!password.value.trim()) {
-    errores.password = ['La contraseña es obligatoria']
-  }
-  
-  // Validar DUI
-  if (!dui.value.trim()) {
-    errores.dui = ['El DUI es obligatorio']
-  } else {
-    const duiRegex = /^\d{8}-\d$/
-    if (!duiRegex.test(dui.value)) {
-      errores.dui = ['El formato del DUI debe ser 12345678-9']
-    }
-  }
-  
-  // Validar teléfono
-  if (!telefono.value.trim()) {
-    errores.telefono = ['El teléfono es obligatorio']
-  } else {
-    const telefonoRegex = /^\d{8}$/
-    if (!telefonoRegex.test(telefono.value)) {
-      errores.telefono = ['El teléfono debe tener exactamente 8 dígitos']
-    }
-  }
-  
-  // Validar fecha de nacimiento
-  if (!fecha_nacimiento.value) {
-    errores.fecha_nacimiento = ['La fecha de nacimiento es obligatoria']
-  } else {
-    const fechaNacimiento = new Date(fecha_nacimiento.value)
-    const fechaActual = new Date()
-    const fechaMinima = new Date()
-    fechaMinima.setFullYear(fechaActual.getFullYear() - 100) // No más de 100 años
-    
-    if (fechaNacimiento > fechaActual) {
-      errores.fecha_nacimiento = ['La fecha de nacimiento no puede ser futura']
-    } else if (fechaNacimiento < fechaMinima) {
-      errores.fecha_nacimiento = ['La fecha de nacimiento no puede ser mayor a 100 años']
-    }
-  }
-  
-  // Validar rol
-  if (!rol.value) {
-    errores.rol = ['El rol es obligatorio']
-  }
-  
-  // Validar estado
-  if (!estado.value) {
-    errores.estado = ['El estado es obligatorio']
-  }
-  
-  return errores
-}
-
 // Función para enviar el formulario
 const enviarFormulario = async () => {
-  // Limpiar errores previos
-  limpiarErrores()
+  // Crear objeto con los datos del formulario
+  const datosFormulario = {
+    email: email.value,
+    password: password.value,
+    dui: dui.value,
+    nombre_completo: nombre_completo.value,
+    fecha_nacimiento: fecha_nacimiento.value,
+    telefono: telefono.value,
+    rol: rol.value,
+    estado: estado.value
+  }
   
-  // Validar campos vacíos
-  const erroresLocales = validarCamposVacios()
-  if (Object.keys(erroresLocales).length > 0) {
-    formErrors.value = erroresLocales
+  // Validar usando el composable (incluir password = true)
+  if (!ejecutarValidacion(datosFormulario, true)) {
     return
   }
   
   loading.value = true
   
   try {
-    const datosUsuario = {
-      email: email.value,
-      password: password.value,
-      dui: dui.value,
-      nombre_completo: nombre_completo.value,
-      fecha_nacimiento: fecha_nacimiento.value,
-      telefono: telefono.value,
-      rol: rol.value,
-      estado: estado.value
-    }
-    
-    const response = await registrarUsuario(datosUsuario)
+    const response = await registrarUsuario(datosFormulario)
     
     // Éxito - mostrar alerta y cerrar modal
     alertStore.showAlert({
@@ -166,7 +109,7 @@ const enviarFormulario = async () => {
   } catch (error) {
     console.error('Error al registrar usuario:', error)
     
-    // Manejar errores de validación
+    // Manejar errores de validación del servidor
     if (error.errors) {
       formErrors.value = error.errors
     } 
@@ -187,78 +130,30 @@ const limpiarFormulario = () => {
   estado.value = 'activo'
 }
 
-// Función para obtener el primer error de un campo
-const obtenerError = (campo) => {
-  return formErrors.value[campo] ? formErrors.value[campo][0] : ''
+// Funciones de formateo con manejo de eventos
+const manejarFormatearDUI = (event) => {
+  dui.value = formatearDUI(event.target.value)
+}
+
+const manejarFormatearTelefono = (event) => {
+  telefono.value = formatearTelefono(event.target.value)
 }
 
 // Funciones de validación en tiempo real
-const validarEmail = () => {
-  if (email.value && formErrors.value.email) {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (emailRegex.test(email.value)) {
-      delete formErrors.value.email
-    }
-  }
+const manejarValidarEmail = () => {
+  validarEmail(email.value)
 }
 
-const validarDUI = () => {
-  if (dui.value && formErrors.value.dui) {
-    const duiRegex = /^\d{8}-\d$/
-    if (duiRegex.test(dui.value)) {
-      delete formErrors.value.dui
-    }
-  }
+const manejarValidarDUI = () => {
+  validarDUI(dui.value)
 }
 
-const validarTelefono = () => {
-  if (telefono.value && formErrors.value.telefono) {
-    const telefonoRegex = /^\d{8}$/
-    if (telefonoRegex.test(telefono.value)) {
-      delete formErrors.value.telefono
-    }
-  }
+const manejarValidarTelefono = () => {
+  validarTelefono(telefono.value)
 }
 
-const validarFechaNacimiento = () => {
-  if (fecha_nacimiento.value && formErrors.value.fecha_nacimiento) {
-    const fechaNacimiento = new Date(fecha_nacimiento.value)
-    const fechaActual = new Date()
-    const fechaMinima = new Date()
-    fechaMinima.setFullYear(fechaActual.getFullYear() - 100)
-    
-    if (fechaNacimiento <= fechaActual && fechaNacimiento >= fechaMinima) {
-      delete formErrors.value.fecha_nacimiento
-    }
-  }
-}
-
-// Funciones de formateo automático
-const formatearDUI = (event) => {
-  let valor = event.target.value.replace(/\D/g, '') // Solo números
-  
-  // Limitar a 9 dígitos máximo
-  if (valor.length > 9) {
-    valor = valor.substring(0, 9)
-  }
-  
-  // Agregar guión antes del último dígito si tiene 9 dígitos
-  if (valor.length === 9) {
-    valor = valor.substring(0, 8) + '-' + valor.substring(8)
-  }
-  
-  dui.value = valor
-}
-
-const formatearTelefono = (event) => {
-  let valor = event.target.value.replace(/\D/g, '') // Solo números
-  
-  // Limitar a 8 dígitos máximo
-  if (valor.length > 8) {
-    valor = valor.substring(0, 8)
-  }
-  
-  telefono.value = valor
+const manejarValidarFechaNacimiento = () => {
+  validarFechaNacimiento(fecha_nacimiento.value)
 }
 </script>
 
@@ -318,7 +213,7 @@ const formatearTelefono = (event) => {
                 density="comfortable"
                 :error-messages="obtenerError('email')"
                 :disabled="loading"
-                @blur="validarEmail"
+                @blur="manejarValidarEmail"
               />
             </VCol>
 
@@ -333,8 +228,8 @@ const formatearTelefono = (event) => {
                 :error-messages="obtenerError('dui')"
                 :disabled="loading"
                 maxlength="10"
-                @input="formatearDUI"
-                @blur="validarDUI"
+                @input="manejarFormatearDUI"
+                @blur="manejarValidarDUI"
               />
             </VCol>
             <VCol cols="12" md="6">
@@ -347,8 +242,8 @@ const formatearTelefono = (event) => {
                 :error-messages="obtenerError('telefono')"
                 :disabled="loading"
                 maxlength="8"
-                @input="formatearTelefono"
-                @blur="validarTelefono"
+                @input="manejarFormatearTelefono"
+                @blur="manejarValidarTelefono"
               />
             </VCol>
 
@@ -375,7 +270,7 @@ const formatearTelefono = (event) => {
                 density="comfortable"
                 :error-messages="obtenerError('fecha_nacimiento')"
                 :disabled="loading"
-                @blur="validarFechaNacimiento"
+                @blur="manejarValidarFechaNacimiento"
               />
             </VCol>
 
@@ -384,7 +279,7 @@ const formatearTelefono = (event) => {
               <VSelect
                 v-model="rol"
                 label="Rol"
-                :items="rolesOptions"
+                :items="rolesDisponibles"
                 placeholder="Seleccionar rol"
                 variant="outlined"
                 density="comfortable"

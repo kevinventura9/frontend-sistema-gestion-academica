@@ -29,3 +29,23 @@ export const registrarUsuario = async (datosUsuario) => {
     throw error.response ? error.response.data : error
   }
 }
+
+export const actualizarUsuario = async (id, datosUsuario) => {
+  try {
+    const response = await axios.put(`/usuarios/${id}`, datosUsuario)
+    return response.data
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error)
+    throw error.response ? error.response.data : error
+  }
+}
+
+export const eliminarUsuario = async (id) => {
+  try {
+    const response = await axios.delete(`/usuarios/${id}`)
+    return response.data
+  } catch (error) {
+    console.error('Error al eliminar usuario:', error)
+    throw error.response ? error.response.data : error
+  }
+}

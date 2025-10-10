@@ -23,8 +23,15 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
   <VerticalNavLink
     :item="{
       title: 'Usuarios y roles',
-      icon: 'ri-user-settings-line',
+      icon: 'ri-group-line',
       to: '/usuarios',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+      title: 'Mi perfil',
+      icon: 'ri-user-settings-line',
+      to: '/perfil',
     }"
   />
 

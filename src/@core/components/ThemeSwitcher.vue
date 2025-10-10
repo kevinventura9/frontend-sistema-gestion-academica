@@ -39,6 +39,15 @@ const changeTheme = () => {
   localStorage.setItem('materio-initial-loader-bg', loaderBg)
 }
 
+// Función para traducir nombres de temas a español
+const getThemeDisplayName = (themeName) => {
+  const themeNames = {
+    light: 'Claro',
+    dark: 'Oscuro'
+  }
+  return themeNames[themeName] || themeName
+}
+
 // Update icon if theme is changed from other sources
 watch(() => globalTheme.name.value, val => {
   currentThemeName.value = val
@@ -58,7 +67,7 @@ watch(() => globalTheme.name.value, val => {
       open-delay="1000"
       scroll-strategy="close"
     >
-      <span class="text-capitalize">{{ currentThemeName }}</span>
+      <span class="text-capitalize">{{ getThemeDisplayName(currentThemeName) }}</span>
     </VTooltip>
   </IconBtn>
 </template>

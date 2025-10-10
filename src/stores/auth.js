@@ -21,8 +21,9 @@ export const useAuthStore = defineStore('auth', {
         this.token = response.token
         this.user = response.user
         this.isAuthenticated = true
-        // Guardar token en localStorage
+        // Guardar token y usuario en localStorage
         localStorage.setItem('token', this.token)
+        localStorage.setItem('user', JSON.stringify(this.user))
         return response
       } catch (error) {
         console.log('Error completo:', error)
@@ -71,18 +72,22 @@ export const useAuthStore = defineStore('auth', {
       this.token = null
       this.isAuthenticated = false
       localStorage.removeItem('token')
+      localStorage.removeItem('user')
     },
 
     initializeAuth() {
       const token = localStorage.getItem('token')
-      if (token) {
+      const userData = localStorage.getItem('user')
+      
+      if (token && userData) {
         this.token = token
-        // Solo marca como autenticado si el token existe
-        // El interceptor de axios validará automáticamente el token
+        this.user = JSON.parse(userData)
         this.isAuthenticated = true
       } else {
-        // Si no hay token, asegurar que no esté autenticado
+        // Si no hay token o datos de usuario, asegurar que no esté autenticado
         this.isAuthenticated = false
+        this.user = null
+        this.token = null
       }
     }
   }

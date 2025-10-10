@@ -1,5 +1,6 @@
 <script setup>
-import { getUsuarioPorId } from '@/api/usuarios'
+import { actualizarUsuario, getUsuarioPorId } from '@/api/usuarios'
+import { useValidaciones } from '@/composables/useValidaciones'
 import { useAlertStore } from '@/stores/alertas'
 import { computed, onMounted, ref, watch } from 'vue'
 
@@ -7,29 +8,38 @@ import { computed, onMounted, ref, watch } from 'vue'
 const props = defineProps({
   userId: {
     type: [String, Number],
-    default: null
+    required: true
   }
 })
+
+// Emitir eventos al padre
+const emit = defineEmits(['usuarioCargado'])
 
 // Store de alertas
 const alertStore = useAlertStore()
 
+// Composable de validaciones
+const {
+  formErrors,
+  limpiarErrores,
+  obtenerError,
+  ejecutarValidacion,
+  validarEmail,
+  validarDUI,
+  validarTelefono,
+  validarFechaNacimiento,
+  formatearDUI,
+  formatearTelefono,
+  rolesOptions,
+  estadoOptions
+} = useValidaciones()
+
 // Estados reactivos
-const loading = ref(false)
+const loading = ref(false) // Para carga inicial de datos
+const saving = ref(false)  // Para operación de guardado
 const usuario = ref(null)
 
-// Datos por defecto (para cuando no hay userId - vista de perfil personal)
-const defaultAccountData = {
-  nombre_completo: 'Juan Pérez García',
-  email: 'juan.perez@ejemplo.com',
-  dui: '12345678-9',
-  telefono: '12345678',
-  fecha_nacimiento: '1990-01-15',
-  rol: 'docente',
-  estado: 'activo',
-}
-
-const accountDataLocal = ref(structuredClone(defaultAccountData))
+const accountDataLocal = ref({})
 
 // Computed para las iniciales del usuario
 const userInitials = computed(() => {
@@ -50,12 +60,6 @@ const formatearFechaParaInput = (fechaISO) => {
 
 // Función para cargar datos del usuario por ID
 const cargarUsuario = async () => {
-  if (!props.userId) {
-    // Si no hay userId, usar datos por defecto (perfil personal)
-    accountDataLocal.value = structuredClone(defaultAccountData)
-    return
-  }
-  
   try {
     loading.value = true
     const response = await getUsuarioPorId(props.userId)
@@ -66,10 +70,12 @@ const cargarUsuario = async () => {
       fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
     }
     accountDataLocal.value = structuredClone(usuarioFormateado)
+    emit('usuarioCargado', true) // Emitir evento de usuario cargado
   } catch (error) {
+    emit('usuarioCargado', false) // Notificar fallo
     console.error('Error al cargar usuario:', error)
     alertStore.showAlert({
-      message: error.message || 'Error al cargar los datos del usuario',
+      message: error.message ||error.error || 'Error al cargar los datos del usuario',
       type: 'error'
     })
   } finally {
@@ -127,37 +133,107 @@ const getRolTexto = (rol) => {
 // Función para resetear el formulario
 const resetForm = () => {
   if (usuario.value) {
-    accountDataLocal.value = structuredClone(usuario.value)
-  } else {
-    accountDataLocal.value = structuredClone(defaultAccountData)
+    const usuarioFormateado = {
+      ...usuario.value,
+      fecha_nacimiento: formatearFechaParaInput(usuario.value.fecha_nacimiento)
+    }
+    accountDataLocal.value = structuredClone(usuarioFormateado)
+  }
+  // Limpiar errores al resetear
+  limpiarErrores()
+}
+
+// Función para guardar cambios
+const saveChanges = async () => {
+  // Validar usando el composable (sin password)
+  if (!ejecutarValidacion(accountDataLocal.value, false)) {
+    alertStore.showAlert({
+      message: 'Por favor, corrija los errores en el formulario',
+      type: 'error'
+    })
+    return
+  }
+
+  saving.value = true
+
+  try {
+    // Llamar a la API para actualizar el usuario
+    const response = await actualizarUsuario(props.userId, accountDataLocal.value)
+    
+    // Actualizar datos locales solo en caso de éxito
+    const usuarioActualizado = {
+      ...response.usuario,
+      fecha_nacimiento: formatearFechaParaInput(response.usuario.fecha_nacimiento)
+    }
+    
+    // Actualizar tanto usuario como accountDataLocal
+    usuario.value = response.usuario
+    accountDataLocal.value = structuredClone(usuarioActualizado)
+    
+    // Limpiar errores después del éxito
+    limpiarErrores()
+    
+    // Mostrar mensaje de éxito
+    alertStore.showAlert({
+      message: response.message,
+      type: 'success'
+    })
+    
+  } catch (error) {
+    console.error('Error al actualizar usuario:', error)
+    
+    // Manejar error específico del director que no puede cambiar su propio rol
+    if (error.error.includes('director')) {
+      // Revertir estado y rol a los valores originales del director
+      accountDataLocal.value.estado = 'activo'
+      accountDataLocal.value.rol = 'director'
+    }
+    
+    // Manejar errores de validación del servidor
+    if (error.errors) {
+      formErrors.value = error.errors
+    }
+    
+    // Mostrar mensaje de error
+    alertStore.showAlert({
+      message: error.error || error.message || 'Error al actualizar el usuario',
+      type: 'warning'
+    })
+    
+  } finally {
+    saving.value = false
   }
 }
 
-// Opciones para los select
-const rolesOptions = [
-  { value: 'director', title: 'Director' },
-  { value: 'docente', title: 'Docente' },
-  { value: 'administrador_academico', title: 'Administrador Académico' }
-]
+// Funciones de formateo con manejo de eventos
+const manejarFormatearDUI = (event) => {
+  accountDataLocal.value.dui = formatearDUI(event.target.value)
+}
 
-const estadoOptions = [
-  { value: 'activo', title: 'Activo' },
-  { value: 'inactivo', title: 'Inactivo' }
-]
+const manejarFormatearTelefono = (event) => {
+  accountDataLocal.value.telefono = formatearTelefono(event.target.value)
+}
 
-// Función para guardar cambios (simulada)
-const saveChanges = () => {
-  console.log('Guardando cambios:', accountDataLocal.value)
-  // Aquí iría la lógica para enviar los datos al backend
-  alertStore.showAlert({
-    message: 'Cambios guardados exitosamente',
-    type: 'success'
-  })
+// Funciones de validación en tiempo real
+const manejarValidarEmail = () => {
+  validarEmail(accountDataLocal.value.email)
+}
+
+const manejarValidarDUI = () => {
+  validarDUI(accountDataLocal.value.dui)
+}
+
+const manejarValidarTelefono = () => {
+  validarTelefono(accountDataLocal.value.telefono)
+}
+
+const manejarValidarFechaNacimiento = () => {
+  validarFechaNacimiento(accountDataLocal.value.fecha_nacimiento)
 }
 
 // Computed para el título del card
 const cardTitle = computed(() => {
-  return props.userId ? 'Editar Usuario' : 'Detalles de la Cuenta'
+  return 'Editar usuario'
 })
 
 // Lifecycle
@@ -177,7 +253,7 @@ onMounted(() => {
           color="primary"
         />
         
-        <VCardText v-if="!loading" class="d-flex">
+        <VCardText v-if="!loading && usuario" class="d-flex">
           <!-- 👉 Avatar con iniciales -->
           <VAvatar
             size="100"
@@ -220,9 +296,9 @@ onMounted(() => {
           </div>
         </VCardText>
 
-        <VDivider v-if="!loading" />
+        <VDivider v-if="!loading && usuario" />
 
-        <VCardText v-if="!loading">
+        <VCardText v-if="!loading && usuario">
           <!-- 👉 Formulario -->
           <VForm class="mt-6">
             <VRow>
@@ -237,6 +313,8 @@ onMounted(() => {
                   placeholder="Juan Pérez García"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('nombre_completo')"
+                  :disabled="loading || saving"
                 />
               </VCol>
 
@@ -252,6 +330,9 @@ onMounted(() => {
                   placeholder="usuario@ejemplo.com"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('email')"
+                  :disabled="loading || saving"
+                  @blur="manejarValidarEmail"
                 />
               </VCol>
 
@@ -266,6 +347,11 @@ onMounted(() => {
                   placeholder="12345678-9"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('dui')"
+                  :disabled="loading || saving"
+                  maxlength="10"
+                  @input="manejarFormatearDUI"
+                  @blur="manejarValidarDUI"
                 />
               </VCol>
 
@@ -280,6 +366,11 @@ onMounted(() => {
                   placeholder="12345678"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('telefono')"
+                  :disabled="loading || saving"
+                  maxlength="8"
+                  @input="manejarFormatearTelefono"
+                  @blur="manejarValidarTelefono"
                 />
               </VCol>
 
@@ -294,6 +385,9 @@ onMounted(() => {
                   type="date"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('fecha_nacimiento')"
+                  :disabled="loading || saving"
+                  @blur="manejarValidarFechaNacimiento"
                 />
               </VCol>
 
@@ -309,6 +403,8 @@ onMounted(() => {
                   placeholder="Seleccionar rol"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('rol')"
+                  :disabled="loading || saving"
                 />
               </VCol>
 
@@ -323,6 +419,8 @@ onMounted(() => {
                   :items="estadoOptions"
                   variant="outlined"
                   density="comfortable"
+                  :error-messages="obtenerError('estado')"
+                  :disabled="loading || saving"
                 />
               </VCol>
 
@@ -333,17 +431,17 @@ onMounted(() => {
               >
                 <VBtn 
                   color="primary"
-                  :loading="loading"
+                  :loading="saving"
+                  :disabled="saving"
                   @click="saveChanges"
                 >
                   Guardar cambios
                 </VBtn>
                 
                 <VBtn
-                  v-if="userId"
                   color="info"
                   variant="outlined"
-                  :disabled="loading"
+                  :disabled="saving"
                   @click="$router.push('/usuarios')"
                 >
                   Volver a la lista

@@ -1,14 +1,19 @@
 <script setup>
 import PerfilUsuarioCuenta from '@/pages/modulo1/perfil-card-datos-view.vue'
 import PerfilUsuarioHistorial from '@/pages/modulo1/perfil-card-historial-view.vue'
-import PerfilUsuarioSeguridad from '@/pages/modulo1/perfil-card-seguridad-view.vue'
 import PerfilUsuarioPermisos from '@/pages/modulo1/perfil-card-permisos-view.vue'
+import PerfilUsuarioSeguridad from '@/pages/modulo1/perfil-card-seguridad-view.vue'
 import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
 const activeTab = ref(route.params.tab || 'cuenta')
+const isUsuarioCargado = ref(true) // Nuevo estado
 
+// Función para manejar el evento del componente hijo
+const handleUsuarioCargado = (status) => {
+  isUsuarioCargado.value = status
+}
 // Obtener el ID del usuario desde la ruta
 const userId = route.params.id
 
@@ -48,6 +53,7 @@ const tabs = [
         v-for="item in tabs"
         :key="item.icon"
         :value="item.tab"
+        :disabled="item.tab !== 'cuenta' && !isUsuarioCargado"
       >
         <VIcon
           size="20"
@@ -65,23 +71,25 @@ const tabs = [
     >
       <!-- Cuenta -->
       <VWindowItem value="cuenta">
-        <PerfilUsuarioCuenta :user-id="userId" />
+        <PerfilUsuarioCuenta :user-id="userId" @usuario-cargado="handleUsuarioCargado" />
       </VWindowItem>
 
-      <!-- Seguridad -->
-      <VWindowItem value="seguridad">
-        <PerfilUsuarioSeguridad :user-id="userId" />
-      </VWindowItem>
+      <template v-if="isUsuarioCargado">
+        <!-- Seguridad -->
+        <VWindowItem value="seguridad">
+          <PerfilUsuarioSeguridad :user-id="userId" />
+        </VWindowItem>
 
-      <!-- Historial -->
-      <VWindowItem value="historial">
-        <PerfilUsuarioHistorial :user-id="userId" />
-      </VWindowItem>
-      
-      <!-- Permisos -->
-    <VWindowItem value="permisos">
-      <PerfilUsuarioPermisos :user-id="userId" />
-    </VWindowItem> 
+        <!-- Historial -->
+        <VWindowItem value="historial">
+          <PerfilUsuarioHistorial :user-id="userId" />
+        </VWindowItem>
+        
+        <!-- Permisos -->
+        <VWindowItem value="permisos">
+          <PerfilUsuarioPermisos :user-id="userId" />
+        </VWindowItem> 
+      </template>
     </VWindow> 
   </div>
 </template>
