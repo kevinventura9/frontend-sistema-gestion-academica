@@ -42,7 +42,6 @@ Cypress.Commands.add('login2', () => {
       password: '300312!',
     },
   }).then((response) => {
-    // Si usas Sanctum o JWT, guarda el token
     window.localStorage.setItem('token', response.body.token)
   })
 })

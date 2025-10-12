@@ -1,5 +1,5 @@
 <script setup>
-import { getUsuarioPorId, getMiPerfil } from '@/api/usuarios'
+import { getMiPerfil, getUsuarioPorId } from '@/api/usuarios'
 import { useAlertStore } from '@/stores/alertas'
 import { computed, onMounted, ref, watch } from 'vue'
 

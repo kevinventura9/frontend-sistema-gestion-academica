@@ -1,13 +1,12 @@
 // Prueba de inicio de sesión con credenciales válidas en el sistema de gestión académica
-// Ajusta los datos de usuario según los que existan en tu base de datos local/desarrollo
 
 describe('Login - Sistema de Gestión Académica', () => {
   it('debe iniciar sesión correctamente con credenciales válidas', () => {
     cy.visit('http://localhost:5173/login')
 
     // Rellena el formulario
-    cy.get('input[type=email]').type('vc20033@ues.edu.sv')
-    cy.get('input[type=password]').type('300312!')
+    cy.get('input[id=campo-email]').type('vc20033@ues.edu.sv')
+    cy.get('input[id=campo-password]').type('300312!')
 
     // Envía el formulario
     cy.contains('Iniciar sesión').click()

@@ -122,6 +122,7 @@ const handleLogin = async () => {
             <!-- email -->
             <VCol cols="12">
               <VTextField
+                id="campo-email"
                 v-model="form.email"
                 label="Correo electrónico"
                 type="email"
@@ -135,6 +136,7 @@ const handleLogin = async () => {
             <!-- password -->
             <VCol cols="12">
               <VTextField
+                id="campo-password"
                 v-model="form.password"
                 label="Contraseña"
                 placeholder="············"

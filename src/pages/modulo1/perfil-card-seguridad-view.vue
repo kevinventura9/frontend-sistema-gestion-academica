@@ -1,5 +1,5 @@
 <script setup>
-import { actualizarUsuario, actualizarMiPerfil } from '@/api/usuarios'
+import { actualizarMiPerfil, actualizarUsuario } from '@/api/usuarios'
 import { useAlertStore } from '@/stores/alertas'
 import { ref } from 'vue'
 

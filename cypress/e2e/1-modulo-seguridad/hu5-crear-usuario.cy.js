@@ -2,7 +2,7 @@
 
 describe('Crear nuevo usuario y asignar rol', () => {
   beforeEach(() => {
-    cy.login('vc20033@ues.edu.sv', '300312!')
+    cy.login()
     cy.visit('http://localhost:5173/usuarios')
   })
 

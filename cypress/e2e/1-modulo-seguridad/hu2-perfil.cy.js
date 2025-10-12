@@ -1,9 +1,8 @@
 // Prueba de renderizado y consumo del endpoint /perfil
-// Asegúrate de que el usuario esté autenticado antes de acceder a /perfil
 
 describe('Renderizado y consumo de /perfil', () => {
   beforeEach(() => {
-    cy.login('vc20033@ues.edu.sv', '300312!')
+    cy.login()
   })
 
   it('debe renderizar la página de perfil y mostrar datos del endpoint y datos relevantes', () => {

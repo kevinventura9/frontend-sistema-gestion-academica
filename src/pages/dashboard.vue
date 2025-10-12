@@ -73,7 +73,7 @@ const avisosRapidos = [
     <VCol cols="12">
       <VCard class="pa-4" elevation="1">
         <VCardTitle class="text-h5 font-weight-semibold">Panel de Gestión Académica</VCardTitle>
-        <VCardSubtitle>Resumen ejecutivo del ciclo 2025-II</VCardSubtitle>
+        <VCardSubtitle>Resumen del año escolar 2025</VCardSubtitle>
         <VCardText class="pt-4">
           <VRow>
             <VCol
