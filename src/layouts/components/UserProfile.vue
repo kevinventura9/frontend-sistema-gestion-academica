@@ -127,7 +127,10 @@ const goToProfile = () => {
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem @click="handleLogout">
+          <VListItem 
+            name="cerrar-sesion"
+            @click="handleLogout"
+          >
             <template #prepend>
               <VIcon
                 class="me-2"

@@ -1,5 +1,5 @@
 <script setup>
-import { actualizarUsuario, getUsuarioPorId, getMiPerfil, actualizarMiPerfil } from '@/api/usuarios'
+import { actualizarMiPerfil, actualizarUsuario, getMiPerfil, getUsuarioPorId } from '@/api/usuarios'
 import { useValidaciones } from '@/composables/useValidaciones'
 import { useAlertStore } from '@/stores/alertas'
 import { computed, onMounted, ref, watch } from 'vue'
@@ -425,7 +425,8 @@ onMounted(() => {
                   density="comfortable"
                   :error-messages="obtenerError('nombre_completo')"
                   :disabled="loading || saving"
-                />
+                    name="nombre_completo"
+                  />
               </VCol>
 
               <!-- 👉 Email -->
@@ -443,7 +444,8 @@ onMounted(() => {
                   :error-messages="obtenerError('email')"
                   :disabled="loading || saving"
                   @blur="manejarValidarEmail"
-                />
+                    name="email"
+                  />
               </VCol>
 
               <!-- 👉 DUI -->
@@ -462,7 +464,8 @@ onMounted(() => {
                   maxlength="10"
                   @input="manejarFormatearDUI"
                   @blur="manejarValidarDUI"
-                />
+                    name="dui"
+                  />
               </VCol>
 
               <!-- 👉 Teléfono -->
@@ -481,6 +484,7 @@ onMounted(() => {
                   maxlength="8"
                   @input="manejarFormatearTelefono"
                   @blur="manejarValidarTelefono"
+                  name="telefono"
                 />
               </VCol>
 
@@ -498,7 +502,8 @@ onMounted(() => {
                   :error-messages="obtenerError('fecha_nacimiento')"
                   :disabled="loading || saving"
                   @blur="manejarValidarFechaNacimiento"
-                />
+                    name="fecha_nacimiento"
+                  />
               </VCol>
 
               <!-- 👉 Rol -->
@@ -516,7 +521,8 @@ onMounted(() => {
                   density="comfortable"
                   :error-messages="obtenerError('rol')"
                   :disabled="loading || saving"
-                />
+                    name="rol"
+                  />
               </VCol>
 
               <!-- 👉 Estado -->
@@ -533,7 +539,8 @@ onMounted(() => {
                   density="comfortable"
                   :error-messages="obtenerError('estado')"
                   :disabled="loading || saving"
-                />
+                    name="estado"
+                  />
               </VCol>
 
               <!-- 👉 Acciones del formulario -->
@@ -542,6 +549,7 @@ onMounted(() => {
                 class="d-flex flex-wrap gap-4"
               >
                 <VBtn 
+                  name="guardar"
                   color="primary"
                   :loading="saving"
                   :disabled="saving"

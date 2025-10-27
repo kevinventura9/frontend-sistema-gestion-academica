@@ -172,7 +172,10 @@ onMounted(() => {
                       <VListItemTitle class="text-sm font-weight-medium">
                         Fecha de Creación
                       </VListItemTitle>
-                      <VListItemSubtitle class="text-body-2">
+                      <VListItemSubtitle 
+                        class="text-body-2"
+                        name="fecha-creacion"
+                      >
                         {{ formatearFechaHora(usuario.created_at) }}
                       </VListItemSubtitle>
                     </VListItem>
@@ -181,7 +184,10 @@ onMounted(() => {
                       <VListItemTitle class="text-sm font-weight-medium">
                         Antigüedad en el Sistema
                       </VListItemTitle>
-                      <VListItemSubtitle class="text-body-2">
+                      <VListItemSubtitle 
+                        class="text-body-2"
+                        name="antiguedad-usuario"
+                      >
                         {{ antiguedadUsuario }}
                       </VListItemSubtitle>
                     </VListItem>
@@ -213,7 +219,10 @@ onMounted(() => {
                       <VListItemTitle class="text-sm font-weight-medium">
                         Fecha de Actualización
                       </VListItemTitle>
-                      <VListItemSubtitle class="text-body-2">
+                      <VListItemSubtitle 
+                        class="text-body-2"
+                        name="fecha-actualizacion"
+                      >
                         {{ formatearFechaHora(usuario.updated_at) }}
                       </VListItemSubtitle>
                     </VListItem>

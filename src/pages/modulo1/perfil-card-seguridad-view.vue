@@ -127,6 +127,7 @@ const limpiarFormulario = () => {
                   density="comfortable"
                   :error-messages="obtenerError('password')"
                   :disabled="saving"
+                  name="nueva_password"
                   @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
                 />
               </VCol>
@@ -158,6 +159,7 @@ const limpiarFormulario = () => {
             <!-- 👉 Botones de Acción -->
             <div class="d-flex flex-wrap gap-4">
               <VBtn
+                name="cambiar-password"
                 type="submit"
                 color="primary"
                 :loading="saving"

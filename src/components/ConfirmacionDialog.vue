@@ -36,12 +36,14 @@
 
       <VCardText class="d-flex justify-center gap-4">
         <VBtn
+          name="confirmar-accion"
           :color="tipo.color"
           @click="confirmar"
         >
           {{ textoBotonConfirmar }}
         </VBtn>
         <VBtn
+          name="cancelar-accion"
           variant="outlined"
           @click="cancelar"
         >

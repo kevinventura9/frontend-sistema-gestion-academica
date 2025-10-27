@@ -199,7 +199,8 @@ const manejarValidarFechaNacimiento = () => {
                 density="comfortable"
                 :error-messages="obtenerError('nombre_completo')"
                 :disabled="loading"
-              />
+                  name="nombre_completo"
+                />
             </VCol>
 
             <!-- Email -->
@@ -214,7 +215,8 @@ const manejarValidarFechaNacimiento = () => {
                 :error-messages="obtenerError('email')"
                 :disabled="loading"
                 @blur="manejarValidarEmail"
-              />
+                  name="email"
+                />
             </VCol>
 
             <!-- DUI y Teléfono -->
@@ -230,7 +232,8 @@ const manejarValidarFechaNacimiento = () => {
                 maxlength="10"
                 @input="manejarFormatearDUI"
                 @blur="manejarValidarDUI"
-              />
+                  name="dui"
+                />
             </VCol>
             <VCol cols="12" md="6">
               <VTextField
@@ -244,7 +247,8 @@ const manejarValidarFechaNacimiento = () => {
                 maxlength="8"
                 @input="manejarFormatearTelefono"
                 @blur="manejarValidarTelefono"
-              />
+                  name="telefono"
+                />
             </VCol>
 
             <!-- Contraseña -->
@@ -257,7 +261,8 @@ const manejarValidarFechaNacimiento = () => {
                 density="comfortable"
                 :error-messages="obtenerError('password')"
                 :disabled="loading"
-              />
+                  name="password"
+                />
             </VCol>
 
             <!-- Fecha de Nacimiento -->
@@ -271,7 +276,8 @@ const manejarValidarFechaNacimiento = () => {
                 :error-messages="obtenerError('fecha_nacimiento')"
                 :disabled="loading"
                 @blur="manejarValidarFechaNacimiento"
-              />
+                  name="fecha_nacimiento"
+                />
             </VCol>
 
             <!-- Rol y Estado -->
@@ -285,7 +291,8 @@ const manejarValidarFechaNacimiento = () => {
                 density="comfortable"
                 :error-messages="obtenerError('rol')"
                 :disabled="loading"
-              />
+                  name="rol"
+                />
             </VCol>
             <VCol cols="12" md="6">
               <VSelect
@@ -296,7 +303,8 @@ const manejarValidarFechaNacimiento = () => {
                 density="comfortable"
                 :error-messages="obtenerError('estado')"
                 :disabled="loading"
-              />
+                  name="estado"
+                />
             </VCol>
 
             <!-- Botones centrados -->
@@ -306,15 +314,16 @@ const manejarValidarFechaNacimiento = () => {
                 color="primary"
                 :loading="loading"
                 :disabled="loading"
-                @click="enviarFormulario"
-              >
+                name="guardar"
+                >
                 {{ loading ? 'Guardando...' : 'Guardar' }}
               </VBtn>
               <VBtn
                 variant="outlined"
                 :disabled="loading"
                 @click="cerrarModal"
-              >
+                  name="cancelar"
+                >
                 Cancelar
               </VBtn>
             </VCol>

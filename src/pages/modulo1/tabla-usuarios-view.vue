@@ -186,6 +186,7 @@ onMounted(() => {
         >
           <VTextField
             v-model="search"
+            name="buscar-usuarios"
             prepend-inner-icon="ri-search-line"
             label="Buscar usuarios..."
             variant="outlined"
@@ -281,6 +282,7 @@ onMounted(() => {
       <template #item.actions="{ item }">
         <div class="d-flex align-center gap-2">
           <VBtn
+            name="editar-usuario"
             icon
             size="small"
             color="info"
@@ -300,6 +302,7 @@ onMounted(() => {
           </VBtn>
 
           <VBtn
+            name="eliminar-usuario"
             icon
             size="small"
             color="error"
