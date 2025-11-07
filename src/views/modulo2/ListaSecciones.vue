@@ -18,12 +18,6 @@
         <template v-slot:header.jornada>
           <span>Jornada</span>
         </template>
-        <template v-slot:header.capacidad_maxima>
-          <span>Capacidad Máxima</span>
-        </template>
-        <template v-slot:header.plan_estudio_id>
-          <span>Plan de Estudio</span>
-        </template>
         <template v-slot:header.anio_lectivo>
           <span>Año Lectivo</span>
         </template>
@@ -56,10 +50,8 @@ export default {
         { text: 'Grado', value: 'grado' },
         { text: 'Código', value: 'codigo' },
         { text: 'Jornada', value: 'jornada' },
-        { text: 'Capacidad Máxima', value: 'capacidad_maxima' },
-        { text: 'Plan de Estudio', value: 'plan_estudio_id' },
-        { text: 'Año Lectivo', value: 'anio_lectivo' },
         { text: 'Estado', value: 'estado' },
+        { text: 'Año Lectivo', value: 'anio_lectivo' },
         { text: 'Acciones', value: 'acciones', sortable: false }
       ]
     }

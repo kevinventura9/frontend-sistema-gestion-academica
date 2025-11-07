@@ -62,21 +62,18 @@ export default {
         grado: null,
       },
         // Materia eliminada del filtro
-      anios: [2024, 2025, 2026],
+    anios: Array.from({ length: 2040 - 2024 + 1 }, (_, i) => 2024 + i),
   estados: ['Abierta', 'Cerrada'],
-      grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'],
+    grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'],
       materias: [
         'Matemáticas', 'Ciencias', 'Artistica', 'Lenguaje', 'Sociales', 'Caligrafía', 'Educación Fisica'
       ],
       headers: [
-        { text: 'Jornada', value: 'jornada' },
-        { text: 'Código', value: 'codigo' },
-        { text: 'Estado', value: 'estado' },
         { text: 'Grado', value: 'grado' },
+        { text: 'Código', value: 'codigo' },
+        { text: 'Jornada', value: 'jornada' },
+        { text: 'Estado', value: 'estado' },
         { text: 'Año Lectivo', value: 'anio_lectivo' },
-        { text: 'Alumnos', value: 'alumnos' },
-        { text: 'Calificaciones', value: 'calificaciones' },
-        { text: 'Asistencia', value: 'asistencia' },
         { text: 'Acciones', value: 'acciones', sortable: false }
       ],
       secciones: [],
@@ -100,9 +97,9 @@ export default {
         };
          // Materia eliminada de los parámetros
         const response = await axios.get('http://localhost:8000/api/secciones', { params });
-        // Ordenar por grado ascendente
-        const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'];
-        this.secciones = response.data.sort((a, b) => ordenGrados.indexOf(a.grado) - ordenGrados.indexOf(b.grado));
+  // Ordenar por grado ascendente usando el orden completo
+  const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'];
+  this.secciones = response.data.sort((a, b) => ordenGrados.indexOf(a.grado) - ordenGrados.indexOf(b.grado));
       } catch (error) {
         alert('Error al consultar las secciones');
         this.secciones = [];
