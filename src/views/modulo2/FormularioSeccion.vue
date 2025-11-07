@@ -14,16 +14,18 @@
             />
           </v-col>
           <v-col cols="12" sm="6">
-            <v-text-field
+            <v-select
               v-model="seccion.codigo"
+              :items="['A','B']"
               label="Código"
               :rules="[v => !!v || 'Campo requerido', validarCodigo]"
               required
             />
           </v-col>
           <v-col cols="12" sm="6">
-            <v-text-field
+            <v-select
               v-model="seccion.jornada"
+              :items="jornadas"
               label="Jornada"
               :rules="[v => !!v || 'Campo requerido']"
               required
@@ -48,11 +50,11 @@
             />
           </v-col>
           <v-col cols="12" sm="6">
-            <v-text-field
+            <v-select
               v-model="seccion.anio_lectivo"
+              :items="anios"
               label="Año Lectivo"
-              type="number"
-              :rules="[v => !!v || 'Campo requerido', v => v >= 2000 || 'Año no válido']"
+              :rules="[v => !!v || 'Campo requerido']"
               required
             />
           </v-col>
@@ -108,8 +110,10 @@ export default {
         plan_estudio_id: '',
         anio_lectivo: ''
       },
-      estados: ['Abierta', 'Cerrada'],
-      grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto'],
+  estados: ['Abierta', 'Cerrada'],
+  grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'],
+  jornadas: ['Matutino', 'Vespertino'],
+  anios: Array.from({ length: 2040 - 2024 + 1 }, (_, i) => 2024 + i),
       cargando: false,
       editId: null
     }
@@ -138,8 +142,9 @@ export default {
   },
   methods: {
     validarCodigo(v) {
-      // Aquí puedes agregar lógica extra para validar el código
-      return true
+      // Validar que el código sea A o B
+      if (!v) return true // la regla de requerido lo cubre
+      return ['A', 'B'].includes(v) || 'Código inválido'
     },
     validarGrado(v) {
       // Aquí puedes agregar lógica extra para validar el grado
