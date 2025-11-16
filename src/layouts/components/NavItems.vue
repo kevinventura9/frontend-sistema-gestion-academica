@@ -344,4 +344,11 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/modulo2/consulta-secciones',
     }"
   />
+  <VerticalNavLink
+    :item="{
+      title: 'Matrículas',
+      icon: 'ri-user-add-line',
+      to: '/modulo5/matriculas',
+    }"
+  />
 </template>

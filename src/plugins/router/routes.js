@@ -78,6 +78,10 @@ export const routes = [
         path: 'modulo2/consulta-secciones/detalle/:id',
         component: () => import('@/pages/modulo2/consulta-secciones/detalle/[id].vue'),
       },
+      {
+        path: 'modulo5/matriculas',
+        component: () => import('@/pages/modulo5/matriculas.vue'),
+      },
     ],
   },
   {

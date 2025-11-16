@@ -51,6 +51,8 @@
             </template>
           </v-data-table>
         </div>
+        <!-- Asistencia temporalmente oculta -->
+        <!--
         <div>
           <h3>Asistencia</h3>
           <v-data-table :headers="headersAsistencia" :items="asistenciasMapeadas">
@@ -65,6 +67,7 @@
             </template>
           </v-data-table>
         </div>
+        -->
       </v-card-text>
     </v-card>
   </v-container>
@@ -107,7 +110,8 @@ export default {
   this.materias = materiasResp.data || [];
   this.materiaSeleccionada = this.materias.length ? this.materias[0].id : null;
   this.actualizarCalificaciones();
-  this.actualizarAsistencias();
+  // Asistencia temporalmente deshabilitada
+  // this.actualizarAsistencias();
   },
   methods: {
     cambiarMateria() {
