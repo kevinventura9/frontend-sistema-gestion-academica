@@ -34,7 +34,19 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/perfil',
     }"
   />
-
+    <!-- 👉 Matriculas -->
+    <VerticalNavSectionTitle
+      :item="{
+        heading: 'Matriculas',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'Alumnos',
+        icon: 'ri-graduation-cap-line',
+        to: '/alumnos',
+      }"
+    />
 
   <!-- 👉 Dashboards -->
    <VerticalNavSectionTitle
@@ -283,6 +295,27 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       title: 'Tables',
       icon: 'ri-table-alt-line',
       to: '/tables',
+    }"
+  />
+
+  <!-- 👉 Matrículas -->
+  <VerticalNavSectionTitle
+    :item="{
+      heading: 'Matrículas',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+      title: 'Alumnos',
+      icon: 'ri-user-line',
+      to: '/alumnos',
+    }"
+  />
+  <VerticalNavLink
+    :item="{
+      title: 'Mi expediente',
+      icon: 'ri-archive-line',
+      to: '/mi-expediente',
     }"
   />
 

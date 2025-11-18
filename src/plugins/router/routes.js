@@ -55,6 +55,22 @@ export const routes = [
         component: () => import('@/pages/modulo1/mi-perfil-page.vue'),
         meta: { requiresAuth: true }
       },
+      {
+        path: '/alumnos',
+        component: () => import('@/pages/modulo6/tabla-alumnos-view.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: '/alumnos/:id',
+        component: () => import('@/pages/modulo6/perfil-alumno-page.vue'),
+        meta: { requiresAuth: true },
+        props: true
+      },
+      {
+        path: '/mi-expediente',
+        component: () => import('@/pages/modulo6/mi-perfil-alumno-page.vue'),
+        meta: { requiresAuth: true }
+      },
     ],
   },
   {

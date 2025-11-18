@@ -17,6 +17,5 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     TablaReutilizable: typeof import('./src/components/TablaReutilizable.vue')['default']
     ThemeSwitcher: typeof import('./src/@core/components/ThemeSwitcher.vue')['default']
-    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

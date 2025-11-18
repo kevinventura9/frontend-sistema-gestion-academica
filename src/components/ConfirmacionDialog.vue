@@ -1,53 +1,59 @@
 <template>
   <VDialog
     v-model="dialog"
-    max-width="500px"
-    persistent
-  >
-    <VCard class="text-center">
-      <VCardText class="d-flex flex-column justify-center align-center">
-        <VBtn
-          icon
-          class="absolute-top-right"
-          @click="cancelar"
-          variant="text"
-        >
-          <VIcon>ri-close-line</VIcon>
-        </VBtn>
+    max-width="450px"
+    >
+    <VCard class="text-center pa-4">
+
+      <VBtn
+        icon
+        size="small"
+        class="absolute-top-right"
+        @click="cancelar"
+        variant="text"
+      >
+        <VIcon size="24">ri-close-line</VIcon>
+      </VBtn>
+
+      <VCardText class="d-flex flex-column justify-center align-center pt-8 pb-4">
         <VAvatar
           :color="tipo.color"
-          variant="outlined"
-          size="50"
+          variant="tonal"
+          size="64"
           class="mb-4"
         >
           <VIcon
-            size="2rem"
+            size="32"
             :icon="tipo.icon"
           />
         </VAvatar>
-        <h6 class="text-h6">
+
+        <h5 class="text-h5 font-weight-bold">
           {{ titulo }}
-        </h6>
+        </h5>
       </VCardText>
 
-      <VCardText>
-        <p>{{ mensaje }}</p>
+      <VCardText class="text-medium-emphasis pb-6 pt-0">
+        <p class="text-body-1">{{ mensaje }}</p>
       </VCardText>
 
-      <VCardText class="d-flex justify-center gap-4">
+      <VCardActions class="justify-center pt-0 pb-6 gap-4">
         <VBtn
           :color="tipo.color"
           @click="confirmar"
+          size="large"
+          variant="flat"
         >
           {{ textoBotonConfirmar }}
         </VBtn>
         <VBtn
           variant="outlined"
           @click="cancelar"
+          size="large"
         >
           Cancelar
         </VBtn>
-      </VCardText>
+      </VCardActions>
     </VCard>
   </VDialog>
 </template>
@@ -85,8 +91,16 @@ const emit = defineEmits(['update:modelValue', 'confirmar', 'cancelar'])
 
 const dialog = ref(props.modelValue)
 
+// 1. Sincroniza el estado interno con el prop modelValue (abrir)
 watch(() => props.modelValue, (newValue) => {
   dialog.value = newValue
+})
+
+// 2. ¡CORRECCIÓN! Sincroniza el prop modelValue con el estado interno (cerrar)
+watch(dialog, (newValue) => {
+  if (newValue === false) {
+    emit('update:modelValue', false)
+  }
 })
 
 const confirmar = () => {
@@ -100,15 +114,21 @@ const cancelar = () => {
 }
 
 const cerrarDialog = () => {
+  // Vuetify/Vue se encargará de propagar el cierre vía el watch(dialog, ...)
   dialog.value = false
-  emit('update:modelValue', false)
 }
 </script>
 
 <style scoped>
+/* Clase para posicionar el botón de cierre con margen adecuado */
 .absolute-top-right {
   position: absolute;
-  inset-block-start: 0.5rem;
-  inset-inline-end: 0.5rem;
+  inset-block-start: 1rem;
+  inset-inline-end: 1rem;
+}
+
+/* Clase para manejar la separación horizontal de los botones */
+.gap-4 {
+  gap: 1rem;
 }
 </style>
