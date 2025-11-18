@@ -66,11 +66,6 @@ export const routes = [
         meta: { requiresAuth: true },
         props: true
       },
-      {
-        path: '/mi-expediente',
-        component: () => import('@/pages/modulo6/mi-perfil-alumno-page.vue'),
-        meta: { requiresAuth: true }
-      },
     ],
   },
   {

@@ -31,11 +31,6 @@ const defaultState = () => ({
   direccion: '',
   departamento: '',
   municipio: '',
-  nombre_responsable: '',
-  parentesco_responsable: '',
-  telefono_responsable: '',
-  correo_responsable: '',
-  direccion_responsable: '',
 })
 
 const formState = reactive(defaultState())
@@ -46,7 +41,30 @@ const sexoOptions = [
   { value: 'otro', title: 'Otro' },
 ]
 
-const parentescoOptions = ['Madre', 'Padre', 'Encargado', 'Tutor legal', 'Otro']
+const normalizarFecha = valor => {
+  if (!valor) return ''
+  if (/^\d{4}-\d{2}-\d{2}$/.test(valor)) return valor
+  const fecha = new Date(valor)
+  if (Number.isNaN(fecha)) return ''
+  const year = fecha.getUTCFullYear()
+  const month = String(fecha.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(fecha.getUTCDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
+}
+
+const edadCalculada = computed(() => {
+  if (!formState.fecha_nacimiento) return '—'
+  const partes = formState.fecha_nacimiento.split('-').map(Number)
+  if (partes.length !== 3 || partes.some(Number.isNaN)) return '—'
+  const [year, month, day] = partes
+  const hoy = new Date()
+  let edad = hoy.getFullYear() - year
+  const mesActual = hoy.getMonth() + 1
+  const diaActual = hoy.getDate()
+  if (mesActual < month || (mesActual === month && diaActual < day)) edad -= 1
+  if (edad < 0 || Number.isNaN(edad)) return '—'
+  return `${edad} años`
+})
 
 const nombreCompleto = computed(() => `${formState.nombres} ${formState.apellidos}`.trim() || 'Alumno sin nombre')
 
@@ -74,7 +92,7 @@ const setErroresServidor = errores => {
 const asignarFormulario = datos => {
   Object.assign(formState, defaultState())
   Object.keys(formState).forEach(key => {
-    formState[key] = datos?.[key] ?? ''
+    formState[key] = key === 'fecha_nacimiento' ? normalizarFecha(datos?.[key]) : datos?.[key] ?? ''
   })
 }
 
@@ -107,9 +125,6 @@ const validarFormulario = () => {
   if (!formState.apellidos.trim()) formErrors.apellidos = 'Ingresa los apellidos'
   if (!formState.fecha_nacimiento) formErrors.fecha_nacimiento = 'Selecciona la fecha de nacimiento'
   if (!formState.sexo) formErrors.sexo = 'Selecciona el sexo'
-  if (!formState.nombre_responsable.trim()) formErrors.nombre_responsable = 'Ingresa el responsable'
-  if (!formState.parentesco_responsable.trim()) formErrors.parentesco_responsable = 'Ingresa el parentesco'
-  if (!formState.telefono_responsable.trim()) formErrors.telefono_responsable = 'Ingresa el teléfono del responsable'
   return Object.keys(formErrors).length === 0
 }
 
@@ -180,8 +195,8 @@ watch(
               <p class="text-body-1 mb-0 text-capitalize">{{ formState.sexo || 'N/D' }}</p>
             </div>
             <div>
-              <span class="text-caption text-medium-emphasis">Fecha de nacimiento</span>
-              <p class="text-body-1 mb-0">{{ formState.fecha_nacimiento || '—' }}</p>
+              <span class="text-caption text-medium-emphasis">Edad</span>
+              <p class="text-body-1 mb-0">{{ edadCalculada }}</p>
             </div>
           </div>
         </div>
@@ -235,45 +250,6 @@ watch(
             </VCol>
             <VCol cols="12" md="3">
               <VTextField v-model="formState.municipio" label="Municipio" :disabled="saving" />
-            </VCol>
-
-            <VCol cols="12">
-              <VDivider class="my-3" />
-              <p class="text-subtitle-2 mb-4">Datos del responsable</p>
-            </VCol>
-
-            <VCol cols="12" md="6">
-              <VTextField
-                v-model="formState.nombre_responsable"
-                label="Nombre completo"
-                :disabled="saving"
-                :error-messages="formErrors.nombre_responsable"
-              />
-            </VCol>
-            <VCol cols="12" md="6">
-              <VSelect
-                v-model="formState.parentesco_responsable"
-                :items="parentescoOptions"
-                label="Parentesco"
-                :disabled="saving"
-                :error-messages="formErrors.parentesco_responsable"
-              />
-            </VCol>
-            <VCol cols="12" md="4">
-              <VTextField
-                v-model="formState.telefono_responsable"
-                label="Teléfono"
-                maxlength="8"
-                :disabled="saving"
-                :error-messages="formErrors.telefono_responsable"
-                @input="formState.telefono_responsable = formState.telefono_responsable.replace(/[^\d]/g, '').slice(0, 8)"
-              />
-            </VCol>
-            <VCol cols="12" md="4">
-              <VTextField v-model="formState.correo_responsable" label="Correo" type="email" :disabled="saving" />
-            </VCol>
-            <VCol cols="12" md="4">
-              <VTextField v-model="formState.direccion_responsable" label="Dirección" :disabled="saving" />
             </VCol>
 
             <VCol cols="12" class="d-flex flex-wrap gap-3">

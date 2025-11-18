@@ -1,8 +1,8 @@
 <script setup>
 import PerfilAlumnoContacto from '@/pages/modulo6/perfil-card-contacto-view.vue'
 import PerfilAlumnoDatos from '@/pages/modulo6/perfil-card-datos-alumno-view.vue'
-import PerfilAlumnoDocumentos from '@/pages/modulo6/perfil-card-documentos-view.vue'
 import PerfilAlumnoHistorial from '@/pages/modulo6/perfil-card-historial-academico-view.vue'
+import PerfilAlumnoAuditoria from '@/pages/modulo6/perfil-card-auditoria-view.vue'
 import PerfilAlumnoMatriculas from '@/pages/modulo6/perfil-card-matriculas-view.vue'
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
@@ -16,8 +16,8 @@ const tabs = [
   { title: 'Datos', icon: 'ri-user-3-line', tab: 'datos' },
   { title: 'Académico', icon: 'ri-graduation-cap-line', tab: 'academico' },
   { title: 'Matrículas', icon: 'ri-booklet-line', tab: 'matriculas' },
-  { title: 'Documentos', icon: 'ri-file-paper-line', tab: 'documentos' },
-  { title: 'Contacto', icon: 'ri-user-heart-line', tab: 'contacto' },
+  { title: 'Auditoría', icon: 'ri-time-line', tab: 'auditoria' },
+  { title: 'Responsable', icon: 'ri-user-heart-line', tab: 'contacto' },
 ]
 
 const handleAlumnoCargado = estado => {
@@ -62,8 +62,8 @@ watch(
           <PerfilAlumnoMatriculas :alumno-id="alumnoId" />
         </VWindowItem>
 
-        <VWindowItem value="documentos">
-          <PerfilAlumnoDocumentos :alumno-id="alumnoId" />
+        <VWindowItem value="auditoria">
+          <PerfilAlumnoAuditoria :alumno-id="alumnoId" />
         </VWindowItem>
 
         <VWindowItem value="contacto">

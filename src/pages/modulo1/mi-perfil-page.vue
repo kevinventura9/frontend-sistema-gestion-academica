@@ -1,6 +1,6 @@
 <script setup>
+import PerfilUsuarioHistorial from '@/pages/modulo1/perfil-card-auditoria-view.vue'
 import PerfilUsuarioCuenta from '@/pages/modulo1/perfil-card-datos-view.vue'
-import PerfilUsuarioHistorial from '@/pages/modulo1/perfil-card-historial-view.vue'
 import PerfilUsuarioPermisos from '@/pages/modulo1/perfil-card-permisos-view.vue'
 import PerfilUsuarioSeguridad from '@/pages/modulo1/perfil-card-seguridad-view.vue'
 import { ref } from 'vue'

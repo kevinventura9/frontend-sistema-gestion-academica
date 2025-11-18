@@ -297,28 +297,6 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/tables',
     }"
   />
-
-  <!-- 👉 Matrículas -->
-  <VerticalNavSectionTitle
-    :item="{
-      heading: 'Matrículas',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Alumnos',
-      icon: 'ri-user-line',
-      to: '/alumnos',
-    }"
-  />
-  <VerticalNavLink
-    :item="{
-      title: 'Mi expediente',
-      icon: 'ri-archive-line',
-      to: '/mi-expediente',
-    }"
-  />
-
   <!-- 👉 Others -->
   <VerticalNavSectionTitle
     :item="{
