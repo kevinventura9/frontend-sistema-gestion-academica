@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { crearMatricula, buscarAlumnos } from '@/apis/matriculas'
+import { buscarAlumnos, crearMatricula } from '@/apis/matriculas';
 
 export default {
   name: 'FormularioMatricula',

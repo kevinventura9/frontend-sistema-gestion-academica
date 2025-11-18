@@ -60,7 +60,7 @@
 </template>
 
 <script>
-import { actualizarMatricula } from '@/apis/matriculas'
+import { actualizarMatricula } from '@/apis/matriculas';
 
 export default {
   name: 'FormularioEdicionMatricula',

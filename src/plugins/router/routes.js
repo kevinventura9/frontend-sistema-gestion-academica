@@ -82,6 +82,26 @@ export const routes = [
         path: 'modulo5/matriculas',
         component: () => import('@/pages/modulo5/matriculas.vue'),
       },
+      {
+        path: 'calificaciones/configuracion',
+        name: 'calificaciones-configuracion',
+        component: () => import('@/pages/calificaciones/configuracion.vue'),
+      },
+      {
+        path: 'calificaciones/actividades',
+        name: 'calificaciones-actividades',
+        component: () => import('@/pages/calificaciones/actividades.vue'),
+      },
+      {
+        path: 'calificaciones/calificar',
+        name: 'calificaciones-calificar',
+        component: () => import('@/pages/calificaciones/calificar.vue'),
+      },
+      {
+        path: 'calificaciones/notas-finales',
+        name: 'calificaciones-notas-finales',
+        component: () => import('@/pages/calificaciones/notas-finales.vue'),
+      },
     ],
   },
   {

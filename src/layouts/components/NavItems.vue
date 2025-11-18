@@ -351,4 +351,37 @@ import VerticalNavLink from '@layouts/components/VerticalNavLink.vue';
       to: '/modulo5/matriculas',
     }"
   />
+  
+  <!-- 👉 Calificaciones con Submenú -->
+  <VerticalNavGroup
+    :item="{
+      title: 'Calificaciones',
+      icon: 'ri-file-list-3-line',
+    }"
+  >
+    <VerticalNavLink
+      :item="{
+        title: 'Configurar Porcentajes',
+        to: '/calificaciones/configuracion',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'Gestionar Actividades',
+        to: '/calificaciones/actividades',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'Calificar Actividades',
+        to: '/calificaciones/calificar',
+      }"
+    />
+    <VerticalNavLink
+      :item="{
+        title: 'Notas Finales',
+        to: '/calificaciones/notas-finales',
+      }"
+    />
+  </VerticalNavGroup>
 </template>

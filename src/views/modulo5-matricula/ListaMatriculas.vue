@@ -38,6 +38,16 @@
         </v-col>
       </v-row>
       
+      <!-- Mensaje cuando no hay filtros seleccionados -->
+      <v-alert
+        v-if="!filtros.anio_lectivo && !filtros.grado && !filtros.codigo"
+        type="info"
+        variant="tonal"
+        class="mb-4"
+      >
+        Selecciona al menos un filtro (Año Lectivo, Grado o Código) para ver las matrículas.
+      </v-alert>
+      
       <v-data-table
         :headers="headers"
         :items="matriculas"
@@ -106,9 +116,9 @@
 </template>
 
 <script>
-import { obtenerMatriculas, eliminarMatricula } from '@/apis/matriculas'
-import FormularioMatricula from './FormularioMatricula.vue'
-import FormularioEdicionMatricula from './FormularioEdicionMatricula.vue'
+import { eliminarMatricula, obtenerMatriculas } from '@/apis/matriculas';
+import FormularioEdicionMatricula from './FormularioEdicionMatricula.vue';
+import FormularioMatricula from './FormularioMatricula.vue';
 
 export default {
   name: 'ListaMatriculas',
@@ -142,13 +152,22 @@ export default {
     }
   },
   mounted() {
-    this.cargarMatriculas()
+    // No cargar matrículas automáticamente para optimizar recursos
+    // Se cargarán cuando el usuario seleccione filtros
   },
   methods: {
     abrirDialog() {
       this.dialog = true
     },
     async cargarMatriculas() {
+      // Solo cargar si hay al menos un filtro seleccionado
+      const hayFiltros = this.filtros.anio_lectivo || this.filtros.grado || this.filtros.codigo
+      
+      if (!hayFiltros) {
+        this.matriculas = []
+        return
+      }
+      
       this.loading = true
       try {
         // Construir parámetros de filtro (solo los que tienen valor)

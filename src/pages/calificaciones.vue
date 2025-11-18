@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ListaMatriculas ref="lista" @notify="onNotify" />
+    <ListaSecciones @notify="onNotify" />
 
     <v-snackbar v-model="snackbar.show" :timeout="4000" top right>
       {{ snackbar.message }}
@@ -12,11 +12,11 @@
 </template>
 
 <script>
-import ListaMatriculas from '@/views/modulo5-matricula/ListaMatriculas.vue';
+import ListaSecciones from '@/views/modulo-calificaciones/ListaSecciones.vue';
 
 export default {
-  name: 'MatriculasPage',
-  components: { ListaMatriculas },
+  name: 'CalificacionesPage',
+  components: { ListaSecciones },
   data() {
     return {
       snackbar: {
@@ -27,8 +27,9 @@ export default {
   },
   methods: {
     onNotify(payload) {
-      // payload expected to have message and/or success
-      const msg = payload && payload.message ? payload.message : (payload && payload.success === false ? 'Ocurrió un error' : 'Operación exitosa')
+      const msg = payload && payload.message 
+        ? payload.message 
+        : (payload && payload.success === false ? 'Ocurrió un error' : 'Operación exitosa')
       this.snackbar.message = msg
       this.snackbar.show = true
     }

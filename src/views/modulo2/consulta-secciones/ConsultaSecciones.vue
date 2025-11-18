@@ -5,22 +5,58 @@
       <v-card-text>
         <v-row>
           <v-col cols="12" sm="3">
-            <v-select v-model="filtros.anio" :items="anios" label="Año Lectivo" clearable />
+            <v-select 
+              v-model="filtros.anio" 
+              :items="anios" 
+              label="Año Lectivo" 
+              clearable
+              @update:modelValue="onFiltroChange"
+            />
           </v-col>
           <v-col cols="12" sm="3">
-            <v-select v-model="filtros.estado" :items="estados" label="Estado" clearable />
+            <v-select 
+              v-model="filtros.grado" 
+              :items="grados" 
+              label="Grado" 
+              clearable
+              @update:modelValue="onFiltroChange"
+            />
           </v-col>
           <v-col cols="12" sm="3">
-            <v-select v-model="filtros.grado" :items="grados" label="Grado" clearable />
+            <v-select 
+              v-model="filtros.codigo" 
+              :items="['A', 'B']" 
+              label="Código" 
+              clearable
+              @update:modelValue="onFiltroChange"
+            />
           </v-col>
           <v-col cols="12" sm="3">
-         <!-- Filtro de materia eliminado -->
+            <v-select 
+              v-model="filtros.estado" 
+              :items="estados" 
+              label="Estado" 
+              clearable
+              @update:modelValue="onFiltroChange"
+            />
           </v-col>
         </v-row>
-        <v-btn color="primary" class="mb-4" @click="consultarSecciones">Buscar</v-btn>
+        
+        <!-- Mensaje cuando no hay filtros -->
+        <v-alert
+          v-if="!hayFiltrosSeleccionados"
+          type="info"
+          variant="tonal"
+          class="mb-4"
+        >
+          Selecciona al menos un filtro (Año Lectivo, Grado, Código o Estado) para ver las secciones.
+        </v-alert>
+        
         <v-data-table
+          v-else
           :headers="headers"
           :items="secciones"
+          :loading="cargando"
           class="elevation-1"
         >
           <template v-slot:header.jornada>
@@ -60,14 +96,11 @@ export default {
         anio: null,
         estado: null,
         grado: null,
+        codigo: null
       },
-        // Materia eliminada del filtro
-    anios: Array.from({ length: 2040 - 2024 + 1 }, (_, i) => 2024 + i),
-  estados: ['Abierta', 'Cerrada'],
-    grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'],
-      materias: [
-        'Matemáticas', 'Ciencias', 'Artistica', 'Lenguaje', 'Sociales', 'Caligrafía', 'Educación Fisica'
-      ],
+      anios: Array.from({ length: 2040 - 2024 + 1 }, (_, i) => 2024 + i),
+      estados: ['Abierta', 'Cerrada'],
+      grados: ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'],
       headers: [
         { text: 'Grado', value: 'grado' },
         { text: 'Código', value: 'codigo' },
@@ -80,28 +113,42 @@ export default {
       cargando: false
     }
   },
+  computed: {
+    hayFiltrosSeleccionados() {
+      return this.filtros.anio || this.filtros.grado || this.filtros.codigo || this.filtros.estado
+    }
+  },
   mounted() {
-    this.consultarSecciones();
+    // No cargar automáticamente - esperar a que seleccione filtros
   },
   methods: {
+    onFiltroChange() {
+      if (this.hayFiltrosSeleccionados) {
+        this.consultarSecciones()
+      } else {
+        this.secciones = []
+      }
+    },
     consultarDetalle(id) {
       this.$router.push({ path: `/modulo2/consulta-secciones/detalle/${id}` })
     },
     async consultarSecciones() {
       this.cargando = true;
       try {
-        const params = {
-          anio_lectivo: this.filtros.anio,
-          estado: this.filtros.estado,
-          grado: this.filtros.grado,
-        };
-         // Materia eliminada de los parámetros
+        const params = {};
+        
+        if (this.filtros.anio) params.anio_lectivo = this.filtros.anio;
+        if (this.filtros.estado) params.estado = this.filtros.estado;
+        if (this.filtros.grado) params.grado = this.filtros.grado;
+        if (this.filtros.codigo) params.codigo = this.filtros.codigo;
+        
         const response = await axios.get('http://localhost:8000/api/secciones', { params });
-  // Ordenar por grado ascendente usando el orden completo
-  const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'];
-  this.secciones = response.data.sort((a, b) => ordenGrados.indexOf(a.grado) - ordenGrados.indexOf(b.grado));
+        
+        // Ordenar por grado ascendente usando el orden completo
+        const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'];
+        this.secciones = response.data.sort((a, b) => ordenGrados.indexOf(a.grado) - ordenGrados.indexOf(b.grado));
       } catch (error) {
-        alert('Error al consultar las secciones');
+        console.error('Error al consultar las secciones:', error);
         this.secciones = [];
       } finally {
         this.cargando = false;
