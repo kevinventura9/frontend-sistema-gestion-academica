@@ -232,14 +232,14 @@
 </template>
 
 <script>
-import { 
-  obtenerActividades,
+import {
   asignarCalificacionActividad,
-  obtenerCalificacionesActividades,
-  buscarAlumnosMatriculados
+  buscarAlumnosMatriculados,
+  obtenerActividades,
+  obtenerCalificacionesActividades
 } from '@/apis/calificaciones';
-import { obtenerSecciones } from '@/apis/secciones';
 import { obtenerMaterias } from '@/apis/materias';
+import { obtenerSecciones } from '@/apis/secciones';
 
 export default {
   name: 'CalificarActividades',

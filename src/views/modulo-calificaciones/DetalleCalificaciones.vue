@@ -192,12 +192,11 @@
 </template>
 
 <script>
-import { 
-  obtenerCalificacionesPorSeccion, 
-  crearCalificacion, 
-  actualizarCalificacion, 
-  eliminarCalificacion,
-  buscarAlumnosMatriculados
+import {
+  actualizarCalificacion,
+  buscarAlumnosMatriculados,
+  crearCalificacion,
+  eliminarCalificacion
 } from '@/apis/calificaciones';
 import { obtenerMaterias } from '@/apis/materias';
 

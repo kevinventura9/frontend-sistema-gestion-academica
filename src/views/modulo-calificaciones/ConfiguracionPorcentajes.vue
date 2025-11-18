@@ -125,7 +125,7 @@
 </template>
 
 <script>
-import { obtenerConfiguracion, guardarConfiguracion } from '@/apis/calificaciones';
+import { guardarConfiguracion, obtenerConfiguracion } from '@/apis/calificaciones';
 import { obtenerSecciones } from '@/apis/secciones';
 
 export default {

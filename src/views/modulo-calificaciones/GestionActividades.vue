@@ -221,15 +221,15 @@
 </template>
 
 <script>
-import { 
-  obtenerActividades, 
-  crearActividad, 
-  actualizarActividad, 
+import {
+  actualizarActividad,
+  crearActividad,
   eliminarActividad,
-  obtenerTiposActividad 
+  obtenerActividades,
+  obtenerTiposActividad
 } from '@/apis/calificaciones';
-import { obtenerSecciones } from '@/apis/secciones';
 import { obtenerMaterias } from '@/apis/materias';
+import { obtenerSecciones } from '@/apis/secciones';
 
 export default {
   name: 'GestionActividades',

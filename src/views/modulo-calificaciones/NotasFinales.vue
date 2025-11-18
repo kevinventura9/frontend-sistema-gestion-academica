@@ -218,10 +218,9 @@
 </template>
 
 <script>
-import { calcularNotaFinal, calcularNotaFinalSeccion, calcularNotaAnualSeccion, obtenerCalificaciones } from '@/apis/calificaciones';
-import { buscarAlumnosMatriculados } from '@/apis/calificaciones';
-import { obtenerSecciones } from '@/apis/secciones';
+import { buscarAlumnosMatriculados, calcularNotaAnualSeccion, calcularNotaFinal, calcularNotaFinalSeccion, obtenerCalificaciones } from '@/apis/calificaciones';
 import { obtenerMaterias } from '@/apis/materias';
+import { obtenerSecciones } from '@/apis/secciones';
 
 export default {
   name: 'NotasFinales',
