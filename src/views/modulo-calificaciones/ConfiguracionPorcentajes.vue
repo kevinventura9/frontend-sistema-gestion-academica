@@ -127,6 +127,7 @@
 <script>
 import { guardarConfiguracion, obtenerConfiguracion } from '@/apis/calificaciones';
 import { obtenerSecciones } from '@/apis/secciones';
+import { obtenerMaterias } from '@/apis/materias';
 
 export default {
   name: 'ConfiguracionPorcentajes',
@@ -135,13 +136,7 @@ export default {
       materiaSeleccionada: null,
       seccionSeleccionada: null,
       trimestreSeleccionado: null,
-      materias: [
-        // TODO: Cargar desde el backend cuando tengas el endpoint
-        { id: 1, nombre: 'Matemáticas' },
-        { id: 2, nombre: 'Ciencias' },
-        { id: 3, nombre: 'Sociales' },
-        { id: 4, nombre: 'Lenguaje' }
-      ],
+      materias: [],
       secciones: [],
       trimestres: [
         { value: 1, text: '1er Trimestre (Ene-Abr)' },
@@ -172,8 +167,21 @@ export default {
   },
   mounted() {
     this.cargarSecciones()
+    this.cargarMaterias()
   },
   methods: {
+    async cargarMaterias() {
+      try {
+        const data = await obtenerMaterias()
+        this.materias = data || []
+      } catch (error) {
+        console.error('Error al cargar materias:', error)
+        this.$emit('notify', {
+          message: 'Error al cargar las materias',
+          color: 'error'
+        })
+      }
+    },
     async cargarSecciones() {
       try {
         const data = await obtenerSecciones()
