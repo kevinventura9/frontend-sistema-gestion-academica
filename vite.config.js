@@ -67,5 +67,23 @@ export default defineConfig({
   },
   server: {
     host: "0.0.0.0",
+    hmr: {
+            host: 'localhost' // Mantiene el Hot Reload funcionando
+        },
+        proxy: {
+            // Captura cualquier petición que empiece por /api
+            '/api': {
+                target: 'http://127.0.0.1:8000', // USA LA IP, NO 'localhost'
+                changeOrigin: true,
+                secure: false,
+                rewrite: (path) => path.replace(/^\/api/, '/api'), // Asegura que envíe /api a Laravel
+            },
+            // Si usas sanctum para la cookie CSRF
+            '/sanctum': {
+                target: 'http://127.0.0.1:8000',
+                changeOrigin: true,
+                secure: false,
+            }
+        }
   },
 })

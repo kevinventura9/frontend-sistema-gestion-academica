@@ -17,7 +17,7 @@
                 label="Alumno"
                 placeholder="Escribe para buscar..."
                 :rules="[v => !!v || 'Campo requerido']"
-                :error-messages="fieldErrors.alumno_id || fieldErrors.alumno_nombre"
+                :error-messages="fieldErrors.alumno_id"
                 clearable
                 no-filter
                 required
@@ -27,6 +27,12 @@
                     <v-list-item-title>
                       {{ searchQuery && searchQuery.length >= 2 ? 'No se encontraron resultados' : 'Escribe al menos 2 caracteres para buscar' }}
                     </v-list-item-title>
+                  </v-list-item>
+                </template>
+                <template v-slot:item="{ props, item }">
+                  <v-list-item v-bind="props">
+                    <v-list-item-title>{{ item?.raw?.nombre_completo }}</v-list-item-title>
+                    <v-list-item-subtitle v-if="item?.raw?.nie">NIE: {{ item.raw.nie }}</v-list-item-subtitle>
                   </v-list-item>
                 </template>
               </v-autocomplete>
@@ -141,8 +147,11 @@ export default {
       try {
         const results = await buscarAlumnos(query, 10)
         console.log('✅ Resultados recibidos:', results)
-        // Backend devuelve { id, nombre, apellido, nombre_completo }
-        this.alumnosOptions = results || []
+        // Backend devuelve { id, nie, nombres, apellidos, nombre_completo }
+        this.alumnosOptions = (results || []).map(item => ({
+          ...item,
+          nombre_completo: item.nombre_completo || `${item.nombres ?? ''} ${item.apellidos ?? ''}`.trim(),
+        }))
         console.log('📋 Opciones disponibles:', this.alumnosOptions)
       } catch (error) {
         console.error('❌ Error al buscar alumnos:', error)

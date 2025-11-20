@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8000/api/matriculas'
-const ALUMNOS_URL = 'http://localhost:8000/api/alumnos'
+const API_URL = '/matriculas'
+const ALUMNOS_URL = '/alumnos'
 
 export const obtenerMatriculas = async (params = {}) => {
   const response = await axios.get(API_URL, {
@@ -33,30 +33,30 @@ export const buscarAlumnos = async (q, limit = 10) => {
     console.log('⚠️ buscarAlumnos: query vacío, retornando array vacío')
     return []
   }
-  
-  console.log(`📡 Llamando a GET ${ALUMNOS_URL}/search con q="${q}", limit=${limit}`)
-  
-  const response = await axios.get(`${ALUMNOS_URL}/search`, {
-    params: { q, limit },
+
+  console.log(`📡 Llamando a GET ${ALUMNOS_URL} con search="${q}", limit=${limit}`)
+
+  const response = await axios.get(ALUMNOS_URL, {
+    params: { search: q, limit, simple: true },
     headers: { Accept: 'application/json' }
   })
-  
+
   console.log('📦 Respuesta del backend:', response.data)
-  
-  // Backend devuelve { message, results: [...] }
-  return response.data.results || []
+
+  // Backend devuelve { message, data: [...] }
+  return response.data.data || []
 }
 
 /**
  * Obtener lista completa de alumnos para dropdown simple
  * @returns {Promise<Array>} Array de alumnos { id, nombre_completo }
  */
-export const obtenerAlumnos = async () => {
-  const response = await axios.get(`${ALUMNOS_URL}/options`, {
+export const obtenerAlumnos = async (limit = 50) => {
+  const response = await axios.get(ALUMNOS_URL, {
+    params: { simple: true, limit },
     headers: { Accept: 'application/json' }
   })
-  // Backend devuelve { message, results: [...] }
-  return response.data.results || response.data.alumnos || []
+  return response.data.data || []
 }
 
 /**

@@ -5,9 +5,9 @@ const handleApiError = (context, error) => {
 	throw error?.response?.data ?? error
 }
 
-export const getAlumnos = async () => {
+export const getAlumnos = async (params = {}) => {
 	try {
-		const response = await axios.get('/alumnos')
+		const response = await axios.get('/alumnos', { params })
 		return response.data
 	} catch (error) {
 		handleApiError('getAlumnos', error)
