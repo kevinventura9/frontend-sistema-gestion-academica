@@ -129,7 +129,7 @@ export default {
   },
   async created() {
   const id = this.$route.params.id;
-  const response = await axios.get(`http://localhost:8000/api/secciones/${id}/detalle`);
+  const response = await axios.get(`/secciones/${id}/detalle`);
   this.detalle = response.data;
   
   // Filtrar alumnos únicos (eliminar duplicados por ID)
@@ -148,7 +148,7 @@ export default {
   }
   
   // Cargar todas las materias desde el endpoint global
-  const materiasResp = await axios.get('http://localhost:8000/api/materias');
+  const materiasResp = await axios.get('/materias');
   this.materias = materiasResp.data || [];
   this.materiaSeleccionada = this.materias.length ? this.materias[0].id : null;
   this.actualizarCalificaciones();

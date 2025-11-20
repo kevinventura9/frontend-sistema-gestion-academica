@@ -142,7 +142,7 @@ export default {
         if (this.filtros.grado) params.grado = this.filtros.grado;
         if (this.filtros.codigo) params.codigo = this.filtros.codigo;
         
-        const response = await axios.get('http://localhost:8000/api/secciones', { params });
+        const response = await axios.get('/secciones', { params });
         
         // Ordenar por grado ascendente usando el orden completo
         const ordenGrados = ['Primero', 'Segundo', 'Tercero', 'Cuarto', 'Quinto', 'Sexto', 'Septimo', 'Octavo', 'Noveno', 'Primer año', 'Segundo año'];

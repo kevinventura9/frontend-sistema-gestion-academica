@@ -1,12 +1,11 @@
 import axios from 'axios'
 
-const BASE_URL = 'http://localhost:8000/api'
-const CALIFICACIONES_URL = `${BASE_URL}/calificaciones`
-const MATRICULAS_URL = `${BASE_URL}/matriculas`
-const TIPOS_ACTIVIDAD_URL = `${BASE_URL}/tipos-actividad`
-const CONFIG_URL = `${BASE_URL}/configuracion-calificaciones`
-const ACTIVIDADES_URL = `${BASE_URL}/actividades`
-const CALIFICACIONES_ACTIVIDADES_URL = `${BASE_URL}/calificaciones-actividades`
+const CALIFICACIONES_URL = '/calificaciones'
+const MATRICULAS_URL = '/matriculas'
+const TIPOS_ACTIVIDAD_URL = '/tipos-actividad'
+const CONFIG_URL = '/configuracion-calificaciones'
+const ACTIVIDADES_URL = '/actividades'
+const CALIFICACIONES_ACTIVIDADES_URL = '/calificaciones-actividades'
 
 // ==================== BÚSQUEDA DE ALUMNOS ====================
 

@@ -62,7 +62,7 @@ export default {
     },
     async clonarSeccion(datos) {
       try {
-        await axios.post('http://localhost:8000/api/secciones/clonar', datos)
+        await axios.post('/secciones/clonar', datos)
         this.modalClonar = false
         this.seccionAClonar = null
         if (this.$refs.listaSecciones) {

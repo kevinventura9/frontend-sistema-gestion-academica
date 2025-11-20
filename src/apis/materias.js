@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:8000/api/materias'
+const API_URL = '/materias'
 
 /**
  * Obtener todas las materias disponibles
