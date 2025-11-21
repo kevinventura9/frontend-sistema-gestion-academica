@@ -45,29 +45,11 @@
         <div>
           <h3>Alumnos</h3>
           <v-data-table :headers="headersAlumnos" :items="detalle.alumnos || []" class="mb-4">
-            <template v-slot:header.id>
-              <span>ID</span>
-            </template>
-            <template v-slot:header.nombre>
-              <span>Nombre</span>
-            </template>
-            <template v-slot:header.apellido>
-              <span>Apellido</span>
-            </template>
-            <template v-slot:header.email>
-              <span>Correo</span>
-            </template>
           </v-data-table>
         </div>
         <div>
           <h3>Calificaciones ({{ materiaSeleccionada ? (materias.find(m => m.id === materiaSeleccionada)?.nombre || '') : '' }})</h3>
           <v-data-table :headers="headersCalificaciones" :items="calificacionesMateria" class="mb-4">
-            <template v-slot:header.alumno>
-              <span>Alumno</span>
-            </template>
-            <template v-slot:header.nota>
-              <span>Nota</span>
-            </template>
           </v-data-table>
         </div>
         <!-- Asistencia temporalmente oculta -->
@@ -111,19 +93,18 @@ export default {
       calificacionesMateria: [],
       asistenciasMapeadas: [],
       headersAlumnos: [
-        { text: 'ID', value: 'id' },
-        { text: 'Nombre', value: 'nombre' },
-        { text: 'Apellido', value: 'apellido' },
-        { text: 'Correo', value: 'email' }
+        { title: 'ID', key: 'id' },
+        { title: 'Nombres', key: 'nombres' },
+        { title: 'Apellidos', key: 'apellidos' },
       ],
       headersCalificaciones: [
-  { text: 'Alumno', value: 'alumno' },
-  { text: 'Nota', value: 'nota' }
+        { title: 'Alumno', key: 'alumno' },
+        { title: 'Nota', key: 'nota' }
       ],
       headersAsistencia: [
-  { text: 'Alumno', value: 'alumno' },
-  { text: 'Fecha', value: 'fecha' },
-  { text: 'Estado', value: 'estado' }
+        { title: 'Alumno', key: 'alumno' },
+        { title: 'Fecha', key: 'fecha' },
+        { title: 'Estado', key: 'estado' }
       ]
     }
   },
@@ -184,7 +165,7 @@ export default {
           console.log(`Alumno ${alumno.id}: nota encontrada`, nota);
           
           return {
-            alumno: `${alumno.nombre} ${alumno.apellido}`,
+            alumno: `${alumno.nombres} ${alumno.apellidos}`,
             nota: nota ? nota.valor : ''
           };
         });
@@ -197,7 +178,7 @@ export default {
         this.asistenciasMapeadas = this.detalle.asistencias.map(a => {
           const alumno = this.detalle.alumnos.find(al => al.id === a.alumno_id);
           return {
-            alumno: alumno ? `${alumno.nombre} ${alumno.apellido}` : a.alumno_id,
+            alumno: alumno ? `${alumno.nombres} ${alumno.apellidos}` : a.alumno_id,
             fecha: a.fecha,
             estado: a.estado
           };
